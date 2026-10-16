@@ -155,11 +155,11 @@ The team will maintain the following availability table and update it when membe
 
 | Member | Available for Team Meetings | Available for Project Work | Unavailable / Notes |
 |---|---|---|---|
-| [Võ Minh Khang] | [Sat/Sun 18:00–22:00] | [Tue/Thu/Sat/Sun 18:00–22:00] | No special constraints |
-| [Đỗ Quốc Đại] | [Sat/Sun 18:00–22:00] | [Tue/Thu/Sat/Sun 18:00–22:00] | No special constraints |
-| [Từ Thái Hưng] | [Sat/Sun 18:00–22:00] | [Tue/Thu/Sat/Sun 18:00–22:00] | No special constraints |
-| [Đặng Hiển] | [Sat/Sun 18:00–22:00] | [Tue/Thu/Sat/Sun 18:00–22:00] | No special constraints |
-| [Nguyễn Hữu Nghĩa] | [Sat/Sun 18:00–22:00] | [Tue/Thu/Sat/Sun 18:00–22:00] | No special constraints |
+| Võ Minh Khang | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Đỗ Quốc Đại | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Từ Thái Hưng | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Đặng Hiển | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Nguyễn Hữu Nghĩa | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
 
 When scheduling a team meeting, the team should prioritize a time that is reasonably available for all members. If a member cannot attend an important meeting, they should notify the team in advance and review the meeting notes afterward.
 
@@ -436,13 +436,12 @@ By participating in this project, all team members agree to:
 
 ### Team Member Approval
 
-| Member | Role | Confirmation /Signature | Date |
+| Member | Role | Confirmation / Signature | Date |
 |---|---|---|---|
-| [Võ Minh Khang] | Project Manager/ Scrum Coordinator | Confirmed | 06/10/2026 |
-| [Đỗ Quốc Đại] | UI/UX Lead  | Confirmed  | 06/10/2026 |
-| [Đặng Hiển] | Backend Lead  | Confirmed  | 06/10/2026 |
-| [Từ Thái Hưng] | Testing & Quality Lead | Confirmed  | 06/10/2026 |
-| [Nguyễn Hữu Nghĩa] | Technical & Documentation Lead | Confirmed  | 06/10/2026 |
------------------------------------------------------------------------
+| Võ Minh Khang | Project Manager / Scrum Coordinator | Confirmed | 06/10/2026 |
+| Đỗ Quốc Đại | UI/UX Lead | Confirmed | 06/10/2026 |
+| Đặng Hiển | Backend Lead | Confirmed | 06/10/2026 |
+| Từ Thái Hưng | Testing & Quality Lead | Confirmed | 06/10/2026 |
+| Nguyễn Hữu Nghĩa | Technical & Documentation Lead | Confirmed | 06/10/2026 |
 
 ------------------------------------------------------------------------
