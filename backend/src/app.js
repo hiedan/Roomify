@@ -7,6 +7,7 @@ function createApp() {
   app.use(express.json());
 
   app.get('/api/v1/health', (_req, res) => sendSuccess(res, { status: 'ok' }));
+  app.use('/api/v1/auth', require('./routes/auth'));
 
   app.use(notFound);
   app.use(errorHandler);
