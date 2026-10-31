@@ -21,6 +21,10 @@ label { margin-bottom: 10px; font-size: 14px; font-weight: 600; }
 .social-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .social { display: flex; align-items: center; justify-content: center; gap: 10px; height: 52px; border: 0; border-radius: 28px; color: #0a0a0a; background: #fff; font-weight: 600; cursor: pointer; }
 .social img { width: 24px; height: 24px; }
+h1 { font-size: 24px; margin: 0 0 28px; }
+.account-panel { overflow-wrap: anywhere; line-height: 1.6; }
+.account-panel .sign-in { width: 100%; margin-top: 24px; }
+button:disabled { cursor: not-allowed; opacity: .65; }
 .status-message { margin: 20px 0 0; font-size: 13px; line-height: 1.5; text-align: center; }
 .status-message:empty { display: none; }
 button:focus-visible, input:focus-visible { outline: 3px solid #ffd56b; outline-offset: 4px; }
