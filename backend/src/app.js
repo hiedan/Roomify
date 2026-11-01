@@ -8,6 +8,7 @@ function createApp() {
 
   app.get('/api/v1/health', (_req, res) => sendSuccess(res, { status: 'ok' }));
   app.use('/api/v1/auth', require('./routes/auth'));
+  app.use('/api/v1/listings', require('./routes/listings'));
 
   app.use(notFound);
   app.use(errorHandler);
