@@ -1,0 +1,28 @@
+.rooms-page { min-height: 100vh; background: #f4f7fb; color: #183047; }
+.rooms-header { min-height: 76px; padding: 16px 28px; background: white; border-bottom: 1px solid #dce5ef; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.rooms-header > div { display: flex; align-items: center; gap: 20px; }
+.rooms-brand { color: #1263c5; font-size: 26px; letter-spacing: -1px; }
+.rooms-page button { cursor: pointer; }
+.rooms-header button, .rooms-pagination button, .rooms-retry { border: 1px solid #c3d3e5; border-radius: 10px; padding: 10px 14px; color: #14559e; background: white; }
+.rooms-layout { display: grid; grid-template-columns: 380px minmax(0, 1fr); height: calc(100dvh - 76px); min-height: 560px; }
+.rooms-sidebar { padding: 26px 22px; overflow-y: auto; }
+.rooms-sidebar h1 { font-size: 24px; margin: 0 0 12px; }
+.rooms-subtitle, .rooms-empty { line-height: 1.6; color: #51647a; }
+.room-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.room-card { width: 100%; display: grid; gap: 10px; text-align: left; padding: 18px; background: white; color: #263e53; border: 1px solid #dce5ef; border-radius: 14px; overflow-wrap: anywhere; line-height: 1.45; }
+.room-card.selected { border-color: #1263c5; box-shadow: 0 0 0 2px #1263c5; }
+.room-price { font-weight: 600; color: #1263c5; }
+.rooms-pagination { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 13px; }
+.rooms-map { position: relative; min-width: 0; min-height: 400px; }
+.map-canvas { width: 100%; height: 100%; min-height: 400px; background: #dce8eb; }
+.map-notice { position: absolute; z-index: 500; bottom: 32px; left: 16px; right: 16px; padding: 12px; background: white; border-radius: 10px; color: #803709; }
+.rooms-page .leaflet-container { font-family: inherit; }
+@media (max-width: 760px) {
+  .rooms-header { padding: 14px 16px; }
+  .rooms-header > div { gap: 10px; }
+  .rooms-header > div:first-child > span, .rooms-user { display: none; }
+  .rooms-layout { display: flex; flex-direction: column; height: auto; }
+  .rooms-map { order: -1; height: 52dvh; min-height: 340px; }
+  .map-canvas { min-height: 340px; }
+  .rooms-sidebar { overflow: visible; }
+}

@@ -5,6 +5,7 @@ import googleLogo from './assets/google.svg';
 import appleLogo from './assets/apple.svg';
 import emailIcon from './assets/email.svg';
 import passwordIcon from './assets/password.svg';
+import RoomsPage from './RoomsPage';
 
 const SESSION_KEY = 'roomify.session';
 async function request(path, body, token) {
@@ -59,10 +60,9 @@ function Login() {
     localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_KEY);
     setSession(null); setMessage('');
   }
+  if (!checking && session) return <RoomsPage user={session.user} onLogout={logout} />;
   return <main className="login-shell"><section className="login-card" aria-label={registering ? 'Roomify sign up' : 'Roomify sign in'}>
-    {checking ? <p role="status">Đang kiểm tra phiên đăng nhập…</p> : session ? <div className="account-panel">
-      <h1>Xin chào, {session.user.fullName}</h1><p>Đăng nhập thành công.</p><p>{session.user.email}</p><button className="sign-in" onClick={logout}>Đăng xuất</button>
-    </div> : <form key={String(registering)} onSubmit={submit} aria-busy={busy}>
+    {checking ? <p role="status">Đang kiểm tra phiên đăng nhập…</p> : <form key={String(registering)} onSubmit={submit} aria-busy={busy}>
       {registering && <><h1>Sign Up</h1><label htmlFor="fullName">Full name</label><div className="field"><input id="fullName" name="fullName" autoComplete="name" placeholder="Your full name" minLength={2} maxLength={100} required disabled={busy} /></div></>}
       <label htmlFor="email">Gmail</label><div className="field"><img src={emailIcon} alt="" /><input id="email" name="email" type="email" autoComplete="username" placeholder="Enter your Gmail" maxLength={255} required disabled={busy} /></div>
       <label htmlFor="password">Password</label><div className="field"><img src={passwordIcon} alt="" /><input id="password" name="password" type="password" autoComplete={registering ? 'new-password' : 'current-password'} placeholder="Enter your Password" minLength={8} maxLength={72} required disabled={busy} /></div>
