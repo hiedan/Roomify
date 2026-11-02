@@ -9,6 +9,6 @@ const testUrl =
 module.exports = {
   port: Number(process.env.PORT) || 3000,
   databaseUrl: isTest ? testUrl : devUrl,
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: '1h',
+  jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-me',
+  jwtExpiresIn: '7d',
 };

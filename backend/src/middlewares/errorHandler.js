@@ -2,7 +2,7 @@ const { ZodError } = require('zod');
 const AppError = require('../utils/AppError');
 
 function sendError(res, status, code, message) {
-  return res.status(status).json({ success: false, data: null, error: { code, message } });
+  return res.status(status).json({ success: false, error: { code, message } });
 }
 
 /** Runs after all routes: any unmatched request becomes a 404 error. */

@@ -6,7 +6,7 @@ const api = request(createApp());
 test('GET /api/v1/health returns success', async () => {
   const res = await api.get('/api/v1/health');
   expect(res.status).toBe(200);
-  expect(res.body).toEqual({ success: true, data: { status: 'ok' }, error: null });
+  expect(res.body).toEqual({ success: true, data: { status: 'ok' } });
 });
 
 test('unknown route returns 404 in the standard error shape', async () => {
@@ -14,7 +14,6 @@ test('unknown route returns 404 in the standard error shape', async () => {
   expect(res.status).toBe(404);
   expect(res.body).toEqual({
     success: false,
-    data: null,
     error: { code: 'NOT_FOUND', message: expect.any(String) },
   });
 });
