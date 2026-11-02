@@ -12,11 +12,13 @@
 
 
 
-**\*\*Status\*\***: Draft — repository-grounded and ready for team review.
+**\*\*Status\*\***: Ready for full-stack implementation — repository-grounded and aligned with the two-person team execution plan.
 
 
 
 **\*\*Input\*\***: User description: "Prepare the specification for Roomify's User Authentication and Role Management feature, assigned to Đặng Hiển as functional group E for PA5, using the supplied spec template and the current GitHub repository."
+
+**\*\*Scope\*\***: This feature is implemented end-to-end across the full stack: frontend UI for sign-in/sign-up, backend authentication APIs, and database persistence. The target solution includes a browser login flow, JWT-based auth, role enforcement, and database validation for tenant, landlord, and admin accounts.
 
 
 

@@ -6,18 +6,30 @@
 - PostgreSQL database with the `nhatro` and `nhatro_test` databases available
 - Environment variables set for `DATABASE_URL` and `TEST_DATABASE_URL`
 - `backend/` dependency installation complete
+- Optional frontend setup for UI verification: `frontend/` dependency installation complete
 
 ## Setup
 
 ```bash
 cd backend
 npm install
+
+cd ../frontend
+npm install
 ```
 
 ## Run validation
 
 ```bash
+cd backend
 npm test -- --runInBand
+```
+
+For frontend UI verification in a separate terminal:
+
+```bash
+cd frontend
+npm run dev
 ```
 
 For focused auth checks, add or run only the auth-related tests once they are implemented:

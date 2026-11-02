@@ -6,7 +6,7 @@
 
 ## Summary
 
-This feature adds a secure authentication flow for Roomify's backend API, including account registration, login, logout, session restoration, and role-based authorization checks. The implementation will use Express.js with PostgreSQL persistence, JWT-based auth tokens, password hashing, and explicit role/status enforcement at the API layer. The repository already contains the base app and DB migration infrastructure; the new work must extend those patterns without circumventing the existing validation and error-handling conventions.
+This feature adds a secure authentication flow for Roomify across the full stack, including a browser login/register experience, account registration, login, logout, session restoration, and role-based authorization checks. The implementation will use a React frontend for the UI, Express.js with PostgreSQL persistence on the backend, JWT-based auth tokens, password hashing, and explicit role/status enforcement at the API layer. The repository already contains the base app and DB migration infrastructure; the new work must extend those patterns without circumventing the existing validation and error-handling conventions.
 
 **Repository naming exception:** the current backend uses established JavaScript module names such as `app.js`, `db.js`, `config.js`, and `errorHandler.js`. This feature therefore follows the repository's existing JS naming convention rather than introducing a new kebab-case source-file pattern.
 
@@ -85,10 +85,31 @@ backend/
 ├── migrations/
 │   └── 1700000000000_init.js
 ├── package.json
-└── eslint.config.js
+├── eslint.config.js
+└── jest.config.js
+
+frontend/
+├── package.json
+├── index.html
+├── src/
+│   ├── api/
+│   │   └── authApi.js
+│   ├── components/
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   ├── pages/
+│   │   ├── LoginPage.jsx
+│   │   ├── RegisterPage.jsx
+│   │   └── DashboardPage.jsx
+│   ├── routes/
+│   │   └── ProtectedRoute.jsx
+│   ├── styles.css
+│   ├── App.jsx
+│   └── main.jsx
+└── README.md
 ```
 
-**Structure Decision**: Keep the feature backend-only, matching the current repository architecture. Auth logic will live in `backend/src/services`, controller/route modules will be under `backend/src/controllers` and `backend/src/routes`, and shared auth policy logic will live in `backend/src/middlewares` or utility modules.
+**Structure Decision**: Keep the authentication feature full-stack but still preserve the existing backend conventions. The backend remains in `backend/src/services`, `backend/src/controllers`, `backend/src/routes`, and `backend/src/middlewares`; the new frontend lives in `frontend/` with a lightweight React app for the sign-in/sign-up experience, auth state management, and protected-route guards. The DB layer remains PostgreSQL with migrations in `backend/migrations/` and schema validation in the backend tests.
 
 ## Complexity Tracking
 

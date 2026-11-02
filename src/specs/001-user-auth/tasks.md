@@ -4,13 +4,25 @@
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, quickstart.md, contracts/auth-api.md
 
+## Full-stack execution model for a 2-person team
+
+- **Person A (Backend + Database)**: auth service, DB schema/migrations, middleware, auth routes, tests, admin role/status flows
+- **Person B (Frontend + Integration)**: React login/register screen, auth state management, protected routes, API integration, end-to-end validation
+- **Shared checkpoint**: both must agree on the auth contract before the UI starts calling the backend
+
 ## Format: `[ID] [P?] [Story] Description`
+
+## Phase 0: Full-stack bootstrap
+
+- [ ] F001 [P] [Frontend] Initialize the `frontend/` app skeleton with the expected project structure for React + Vite
+- [ ] F002 [P] [Frontend] Create the initial frontend auth pages: `LoginPage`, `RegisterPage`, and `DashboardPage` with empty route shell
+- [ ] F003 [P] [Frontend] Create `AuthContext`, API client layer, and protected-route guard skeleton in `frontend/src/`
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 [P] [Setup] Review the current backend structure and map auth feature files in `backend/src/` and `backend/tests/`
-- [ ] T002 [P] [Setup] Add the required auth dependencies in `backend/package.json` (`bcryptjs` and `jsonwebtoken`)
-- [ ] T003 [P] [Setup] Confirm test environment variables for `DATABASE_URL` and `TEST_DATABASE_URL` and document developer setup in `backend/src/config.js`
+- [ ] B001 [P] [Setup] Review the current backend structure and map auth feature files in `backend/src/` and `backend/tests/`
+- [ ] B002 [P] [Setup] Add the required auth dependencies in `backend/package.json` (`bcryptjs` and `jsonwebtoken`)
+- [ ] B003 [P] [Setup] Confirm test environment variables for `DATABASE_URL` and `TEST_DATABASE_URL` and document developer setup in `backend/src/config.js`
 
 ---
 
