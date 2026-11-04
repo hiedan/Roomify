@@ -10,8 +10,14 @@ function AppShell() {
 
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-      <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+      />
+      <Route
+        path="/register"
+        element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+      />
       <Route
         path="/dashboard"
         element={
@@ -20,7 +26,10 @@ function AppShell() {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to={user ? '/dashboard' : '/login'} replace />} />
+      <Route
+        path="*"
+        element={<Navigate to={user ? '/dashboard' : '/login'} replace />}
+      />
     </Routes>
   );
 }
