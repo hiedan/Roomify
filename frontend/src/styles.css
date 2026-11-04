@@ -21,6 +21,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 72px;
+  padding-bottom: 36px;
   background: linear-gradient(135deg, #0b3d8f 0%, #1f89d5 42%, #71d7d5 100%);
 }
 
@@ -136,6 +138,11 @@ button, input {
 .primary-button:hover {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.08);
+}
+
+.primary-button:disabled {
+  opacity: 0.75;
+  cursor: wait;
 }
 
 .secondary-text {

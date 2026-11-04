@@ -6,7 +6,13 @@ import { useAuth } from '../context/AuthContext';
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: '', password: '', rememberMe: false });
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +56,9 @@ export default function LoginPage() {
               className="auth-input"
               type="email"
               value={form.email}
-              onChange={(event) => setForm({ ...form, email: event.target.value })}
+              onChange={(event) =>
+                setForm({ ...form, email: event.target.value })
+              }
               placeholder="Enter your email"
               required
             />
@@ -65,7 +73,9 @@ export default function LoginPage() {
               className="auth-input"
               type="password"
               value={form.password}
-              onChange={(event) => setForm({ ...form, password: event.target.value })}
+              onChange={(event) =>
+                setForm({ ...form, password: event.target.value })
+              }
               placeholder="Enter your password"
               required
             />
@@ -77,11 +87,16 @@ export default function LoginPage() {
             <input
               type="checkbox"
               checked={form.rememberMe}
-              onChange={(event) => setForm({ ...form, rememberMe: event.target.checked })}
+              onChange={(event) =>
+                setForm({ ...form, rememberMe: event.target.checked })
+              }
             />
             Remember me
           </label>
-          <button type="button" className="link-button">Forgot password?</button>
+
+          <button type="button" className="link-button">
+            Forgot password?
+          </button>
         </div>
 
         <button type="submit" className="primary-button" disabled={loading}>
@@ -97,8 +112,12 @@ export default function LoginPage() {
         <div className="divider">Or With</div>
 
         <div className="social-row">
-          <button type="button" className="social-button">G Google</button>
-          <button type="button" className="social-button"> Apple</button>
+          <button type="button" className="social-button">
+            G Google
+          </button>
+          <button type="button" className="social-button">
+             Apple
+          </button>
         </div>
       </form>
     </div>
