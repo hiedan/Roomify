@@ -10,6 +10,16 @@
 - **Person B (Frontend + Integration)**: React login/register screen, auth state management, protected routes, API integration, end-to-end validation
 - **Shared checkpoint**: both must agree on the auth contract before the UI starts calling the backend
 
+## Progress checkpoint — 2026-11-05
+
+- Person A: **Đặng Hiển** (backend and database).
+- Initial setup increment: B001–B003 completed; see `backend/README.md` for the file map, environment selection, and setup commands.
+- Verification: dependency hash/token smoke checks, four config-selection cases, backend lint (two pre-existing warnings), three isolated scaffold API tests, and frontend production build passed.
+- Full backend tests remain blocked by unavailable PostgreSQL/PostGIS (`ECONNREFUSED` on port 5432). Migration/database behavior and authentication are not yet verified.
+- F001–F003 already have source files on the baseline, but their original unchecked status is retained for Person B to confirm. Real API integration is still incomplete.
+- Next for Person A: T004–T009, then T010–T016 (registration tests and implementation). This increment does not complete the auth foundation.
+- Scope/audit gaps to resolve before acceptance are listed in `docs/management/PA3-Progress-2026-11-05.md`.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 ## Phase 0: Full-stack bootstrap
@@ -20,9 +30,9 @@
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] B001 [P] [Setup] Review the current backend structure and map auth feature files in `backend/src/` and `backend/tests/`
-- [ ] B002 [P] [Setup] Add the required auth dependencies in `backend/package.json` (`bcryptjs` and `jsonwebtoken`)
-- [ ] B003 [P] [Setup] Confirm test environment variables for `DATABASE_URL` and `TEST_DATABASE_URL` and document developer setup in `backend/src/config.js`
+- [x] B001 [P] [Setup] Review the current backend structure and map auth feature files in `backend/src/` and `backend/tests/`
+- [x] B002 [P] [Setup] Add the required auth dependencies in `backend/package.json` (`bcryptjs` and `jsonwebtoken`)
+- [x] B003 [P] [Setup] Confirm test environment variables for `DATABASE_URL` and `TEST_DATABASE_URL` and document developer setup in `backend/src/config.js`
 
 ---
 
