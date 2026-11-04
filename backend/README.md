@@ -1,8 +1,8 @@
 # Backend Authentication Setup
-Performed by: Codex (AI-assisted preparation for Đặng Hiển) | Reviewed by: Pending | Edited by: Codex
+Performed by: Đặng Hiển | Reviewed by: Nguyễn Hữu Nghĩa| Edited by: Đặng Hiển
 
 ## Current implementation and file map (B001)
-Performed by: Codex | Reviewed by: Pending | Edited by: Codex
+Performed by: Đặng Hiển | Reviewed by: Nguyễn Hữu Nghĩa| Edited by: Đặng Hiển
 
 The baseline is `develop` commit `0a120d704f9c712270294134c4ad4265855c9110`.
 Đặng Hiển is Person A (backend/database). Person B owns frontend integration.
@@ -28,7 +28,7 @@ Follow these established contracts for this increment; any naming migration must
 be coordinated rather than renaming tables during authentication setup.
 
 ## Dependencies (B002)
-Performed by: Codex | Reviewed by: Pending | Edited by: Codex
+Performed by: Đặng Hiển | Reviewed by: Nguyễn Hữu Nghĩa| Edited by: Đặng Hiển
 
 `bcryptjs` and `jsonwebtoken` are declared in `package.json` and locked in
 `package-lock.json`. Install the reproducible dependency set with `npm ci`.
@@ -36,7 +36,7 @@ Adding these dependencies does not mean password hashing or JWT authentication
 is already implemented.
 
 ## Developer environment (B003)
-Performed by: Codex | Reviewed by: Pending | Edited by: Codex
+Performed by: Đặng Hiển | Reviewed by: Nguyễn Hữu Nghĩa| Edited by: Đặng Hiển
 
 From the repository root:
 
@@ -92,7 +92,7 @@ The health response should be `{"success":true,"data":{"status":"ok"}}`.
 connection or PostGIS failures are setup failures, not a passing auth suite.
 
 ## Integration checkpoint and next work
-Performed by: Codex | Reviewed by: Pending | Edited by: Codex
+Performed by: Đặng Hiển | Reviewed by: Nguyễn Hữu Nghĩa| Edited by: Đặng Hiển
 
 Next: T004–T009, followed by registration tests T010/T011 and implementation
 T012–T016. Agree on `src/specs/001-user-auth/contracts/auth-api.md` with Person B
