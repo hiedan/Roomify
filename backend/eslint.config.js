@@ -14,5 +14,5 @@ module.exports = [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
-  { ignores: ['node_modules/'] },
+  { ignores: ['node_modules/', 'dist/', 'build/', 'coverage/', '**/*.min.js'] },
 ];

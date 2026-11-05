@@ -6,15 +6,21 @@ function sendError(res, status, code, message) {
 }
 
 /** Runs after all routes: any unmatched request becomes a 404 error. */
-function notFound(req, _res, next) {
-  next(new AppError(404, 'NOT_FOUND', `Route ${req.method} ${req.originalUrl} not found`));
+function notFound(_req, _res, next) {
+  // Request URLs can contain credentials even though auth does not accept them.
+  next(new AppError(404, 'NOT_FOUND', 'Route not found'));
 }
 
 // Express recognizes error handlers by their 4 parameters, so keep `_next`.
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, _req, res, _next) {
   if (err instanceof ZodError) {
-    const message = err.issues.map((i) => `${i.path.join('.') || 'input'}: ${i.message}`).join('; ');
+    const message = err.issues.map((i) => {
+      // Zod's default strict/enum messages echo unknown keys and rejected values.
+      if (i.code === 'unrecognized_keys') return 'input: Unsupported request fields';
+      const field = i.path.join('.') || 'input';
+      return `${field}: ${i.code === 'invalid_enum_value' ? 'Invalid value' : i.message}`;
+    }).join('; ');
     return sendError(res, 400, 'VALIDATION_ERROR', message);
   }
   if (err.type === 'entity.parse.failed') {
@@ -24,7 +30,7 @@ function errorHandler(err, _req, res, _next) {
     return sendError(res, err.status, err.code, err.message);
   }
   // eslint-disable-next-line no-console
-  console.error(err);
+  console.error('Unexpected server error');
   return sendError(res, 500, 'INTERNAL', 'Internal server error');
 }
 

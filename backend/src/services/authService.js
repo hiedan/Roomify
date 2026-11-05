@@ -129,4 +129,4 @@ function verifyToken(token) {
   return { sub: claims.sub, role: claims.role, iat: claims.iat, exp: claims.exp };
 }
 
-module.exports = { hashPassword, verifyPassword, issueToken, verifyToken };
+module.exports = { hashPassword, verifyPassword, issueToken, verifyToken, validatePassword };
