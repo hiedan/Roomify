@@ -4,6 +4,13 @@
 
 **Decision**: Roomify's v1 auth flow will use JWTs for browser sessions, but the server will validate the current account state against PostgreSQL on each protected request. Token lifetime will be 1 hour for standard sessions and 7 days for remember-me sessions.
 
+**T004 signing-key policy**: Fix signing and verification to HS256. Require a
+non-placeholder `JWT_SECRET` of at least 32 UTF-8 bytes for both operations, with
+generic `AUTH_CONFIG_ERROR` failures that disclose neither keys nor tokens. Generate
+deployment keys with `crypto.randomBytes(32).toString('hex')`; see
+[quickstart.md](./quickstart.md#jwt-signing-key-t004) for configuration and migration
+of shorter keys. No DB account checks are implemented by T004.
+
 **Rationale**: The repo already exposes a pattern for server-side validation, and the spec explicitly requires account status and role changes after login to be reflected in later requests. A classic JWT with a user ID and role in the payload is compatible with that requirement, while a DB lookup keeps authorization current and safe.
 
 **Alternatives considered**:

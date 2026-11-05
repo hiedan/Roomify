@@ -18,7 +18,40 @@ cd ../frontend
 npm install
 ```
 
+### JWT signing key (T004)
+
+Set `JWT_SECRET` in `backend/.env` or the deployment environment. The auth service
+signs and verifies only HS256 tokens and requires a non-placeholder key containing
+at least **32 UTF-8 bytes**. Missing, blank, known placeholder/default, and shorter
+keys cause both token issuance and verification to fail with `AUTH_CONFIG_ERROR`
+(status 500). The `change-me` example and `dev-secret-change-me` config fallback are
+intentionally rejected.
+
+Generate a key locally with Node.js:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+This uses `crypto.randomBytes(32)` to generate 32 random bytes, encoded as 64 hex
+characters for an environment variable. Copy the output into `JWT_SECRET` locally;
+keep it out of version control and shared logs. The service uses the configured
+string as UTF-8 without trimming or decoding hex/base64. Length alone does not
+guarantee randomness; use the generated value rather than a repeated or predictable
+string. Existing keys shorter than 32 bytes must be replaced; changing the key
+invalidates tokens signed with the previous key.
+
 ## Run validation
+
+T004 unit tests and lint run from `backend/` without PostgreSQL:
+
+```bash
+cd backend
+npx jest --config jest.unit.config.js --runInBand
+npm run lint
+```
+
+The existing integration suite requires PostgreSQL and retains its migration setup:
 
 ```bash
 cd backend

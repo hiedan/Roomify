@@ -28,7 +28,7 @@
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-- [ ] T004 [Foundation] Add a reusable `auth` service module in `backend/src/services/authService.js` for password hashing, verification, token issuance, and token validation
+- [X] T004 [Foundation] Add a reusable `auth` service module in `backend/src/services/authService.js` for password hashing, verification, token issuance, and token validation
 - [ ] T005 [Foundation] Add a shared `requireAuth` middleware in `backend/src/middlewares/auth.js` to read JWTs and load the current user from the database
 - [ ] T006 [Foundation] Add `requireRole` and `requireAdmin` helpers in `backend/src/middlewares/auth.js` to enforce tenant/landlord/admin access rules
 - [ ] T007 [Foundation] Add a central `authController.js` in `backend/src/controllers/` to handle registration, login, current-user retrieval, and logout flows
