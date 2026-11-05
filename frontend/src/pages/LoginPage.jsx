@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { loginRequest } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, error: sessionError } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -18,24 +17,18 @@ export default function LoginPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (loading) return;
     setError('');
     setLoading(true);
 
     try {
-      const response = await loginRequest({
+      const established = await login({
         email: form.email,
         password: form.password,
         rememberMe: form.rememberMe,
       });
 
-      login({
-        id: response.user?.id || 'demo-user',
-        fullName: response.user?.fullName || 'Demo User',
-        email: response.user?.email || form.email,
-        role: response.user?.role || 'tenant',
-      });
-
-      navigate('/dashboard');
+      if (established) navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Sign-in failed. Please try again.');
     } finally {
@@ -45,14 +38,17 @@ export default function LoginPage() {
 
   return (
     <div className="auth-shell">
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="auth-form" onSubmit={handleSubmit} aria-busy={loading}>
         <h1 className="auth-title">Roomify Login Screen</h1>
+        {sessionError && <p role="alert">{sessionError}</p>}
 
         <div className="field-group">
-          <label className="field-label">Email</label>
+          <label className="field-label" htmlFor="email">Email</label>
           <div className="input-wrap">
             <span className="input-icon">@</span>
             <input
+              id="email"
+              autoComplete="email"
               className="auth-input"
               type="email"
               value={form.email}
@@ -66,10 +62,12 @@ export default function LoginPage() {
         </div>
 
         <div className="field-group">
-          <label className="field-label">Password</label>
+          <label className="field-label" htmlFor="password">Password</label>
           <div className="input-wrap">
             <span className="input-icon">🔒</span>
             <input
+              id="password"
+              autoComplete="current-password"
               className="auth-input"
               type="password"
               value={form.password}
@@ -94,7 +92,7 @@ export default function LoginPage() {
             Remember me
           </label>
 
-          <button type="button" className="link-button">
+          <button type="button" className="link-button" disabled title="Password recovery is not available">
             Forgot password?
           </button>
         </div>
@@ -103,7 +101,7 @@ export default function LoginPage() {
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
 
-        {error ? <div className="message error-message">{error}</div> : null}
+        {error ? <div className="message error-message" role="alert">{error}</div> : null}
 
         <p className="secondary-text">
           Don&apos;t have an account? <Link to="/register">Sign Up</Link>
@@ -112,10 +110,10 @@ export default function LoginPage() {
         <div className="divider">Or With</div>
 
         <div className="social-row">
-          <button type="button" className="social-button">
+          <button type="button" className="social-button" disabled title="Social sign-in is not available">
             G Google
           </button>
-          <button type="button" className="social-button">
+          <button type="button" className="social-button" disabled title="Social sign-in is not available">
              Apple
           </button>
         </div>

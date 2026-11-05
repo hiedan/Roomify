@@ -38,23 +38,42 @@ Represents a browser session without a dedicated database table in v1.
 - Inactive or deleted users cannot keep valid sessions.
 - If role or status changes after login, protected requests must check the current DB state before authorizing the request.
 
-## Entity: Admin Action Audit (planned)
+## Entity: Admin Action Audit (`admin_action_audits`)
 
-A lightweight audit record should exist for administrative changes.
+Implemented by migration `1700000001000_admin_action_audits.js`. FR-022 makes
+auditing mandatory for actual role/status changes, despite T040's conditional
+wording. No-op requests return the current safe profile and `changed: false`
+without changing the user row or adding an audit record.
 
 | Field | Type | Constraints | Notes |
 |---|---|---|---|
-| id | bigint | PK | Audit row ID |
-| actor_user_id | bigint | required | Active admin making the change |
-| target_user_id | bigint | required | User being changed |
-| action_type | varchar(30) | required | e.g. `role_change`, `account_disable`, `account_enable` |
-| previous_value | varchar(255) | optional | Old role or status |
-| new_value | varchar(255) | optional | New role or status |
-| created_at | timestamptz | required | Audit timestamp |
+| id | bigserial | PK, generated | Audit row ID; read by Node.js as an exact string |
+| actor_user_id | bigint | required, FK users(id), ON DELETE RESTRICT | Active admin making the change |
+| target_user_id | bigint | required, FK users(id), ON DELETE RESTRICT | Non-admin user being changed |
+| action_type | varchar(30) | required, checked | `role_change`, `account_disable`, or `account_enable` |
+| previous_value | varchar(20) | required, checked | Original `tenant`/`landlord` or literal `true`/`false` |
+| new_value | varchar(20) | required, checked | New role or literal boolean string |
+| created_at | timestamptz | required, default current_timestamp | Database transaction timestamp |
 
 ### Relationship notes
 - A user may have many audit rows as actor or target.
-- The audit table is useful for compliance and troubleshooting even when not explicitly required by the current API surface.
+- Actor and target IDs must differ. Role audit values must be distinct tenant/landlord values; disable is exactly `true` -> `false`, enable is exactly `false` -> `true`.
+- Indexes cover `(target_user_id, created_at)` and `actor_user_id`.
+- Foreign keys retain referenced user identity by rejecting physical deletion. Status changes never delete users or owned/history rows; account deletion is outside this version.
+- No password, hash, token or unrelated profile data is stored. No audit viewer endpoint/UI is implemented here.
+
+### Atomic update and authorization
+
+Both admin operations use a single checked-out PostgreSQL connection. After
+`BEGIN`, the service locks actor/target rows with `ORDER BY id FOR UPDATE`, using
+database numeric ordering and exact string IDs. It re-checks the active admin
+actor and non-admin target under those locks, updates only the selected user
+field, inserts the corresponding audit row, and commits. Any failure rolls back;
+connections are released, with broken connections discarded if rollback fails.
+No-op handling occurs only after authorization and target checks.
+
+The ERD is maintained in
+[`ERD_Roomify.mmd`](../../../docs/analysis-and-design/ERD_Roomify.mmd).
 
 ## Relationship summary
 - Users have one current role and one activity status.

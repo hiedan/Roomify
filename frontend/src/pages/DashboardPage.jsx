@@ -1,30 +1,17 @@
 import { useAuth } from '../context/AuthContext';
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
-
-  return (
-    <div className="dashboard-card">
-      <div className="dashboard-header">
-        <h1>Welcome back</h1>
-        <span className="role-badge">{user?.role || 'tenant'}</span>
-      </div>
-
-      <div className="user-card">
-        <p><strong>Full name:</strong> {user?.fullName || 'Demo User'}</p>
-        <p><strong>Email:</strong> {user?.email || 'demo@roomify.com'}</p>
-        <p><strong>Role:</strong> {user?.role || 'tenant'}</p>
-      </div>
-
-      <div className="message">
-        Authentication is ready. Connect this dashboard to the real backend API when the auth endpoints are implemented.
-      </div>
-
-      <div style={{ marginTop: 22, display: 'flex', justifyContent: 'flex-end' }}>
-        <button className="primary-button" type="button" onClick={logout}>
-          Sign Out
-        </button>
-      </div>
+  const { user, logout, refresh } = useAuth();
+  return <main className="dashboard-card" aria-label="Account view">
+    <div className="dashboard-header"><h1>Welcome back</h1><span className="role-badge">{user.role}</span></div>
+    <div className="user-card">
+      <p><strong>Full name:</strong> {user.fullName}</p>
+      <p><strong>Email:</strong> {user.email}</p>
+      <p><strong>Role:</strong> {user.role}</p>
     </div>
-  );
+    <div className="session-actions">
+      <button type="button" onClick={refresh}>Refresh account</button>
+      <button className="primary-button" type="button" onClick={logout}>Sign Out</button>
+    </div>
+  </main>;
 }

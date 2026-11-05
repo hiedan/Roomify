@@ -523,7 +523,7 @@ Only PA2 has a confirmed calendar baseline in this schedule. For Sprint 3, D1 me
 | Sprint / Milestone | Period | Planned Outcome and Exit Evidence | Coordination |
 |---|---|---|---|
 | Sprint 1 / M1: PA1 baseline | Historical; exact course dates to be confirmed | Product proposal, application survey, Team Contract, repository and tool evidence. Completion is reported by the team; the schedule does not certify submission. | TV5 coordinates; all members contribute. |
-| Sprint 2 / M2: PA2 planning baseline | 10-24 October 2026 | Project Plan and Vision in Markdown/PDF; Spec Kit initialization and training evidence; AI usage, meeting, Jira and Git records; PA2 package. | TV1 integrates Project Plan; TV2 coordinates tools/evidence; TV5 integrates Vision and packaging. |
+| Sprint 2 / M2: PA2 planning baseline | 15-24 October 2026 | Project Plan and Vision in Markdown/PDF; Spec Kit initialization and training evidence; AI usage, meeting, Jira and Git records; PA2 package. | TV1 integrates Project Plan; TV2 coordinates tools/evidence; TV5 integrates Vision and packaging. |
 | Sprint 3 / M3: PA3 initial implementation | Proposed D1-D21; calendar dates pending | Revised Plan/Vision and Changes.md; complete use-case specifications and prototypes; at least one verified end-to-end functional group; artifacts, reports and narrated demo. Authentication and listing management are the internal target. | Proposed task owners and reviewers are in Section 5.3. |
 | Sprint 4 / M4: PA4 integrated workflows | Forecast D1-D21; calendar dates pending | Architecture matching the implementation, revised specifications, at least two additional end-to-end functional groups, generated tests and demo evidence. | TV5 coordinates; detailed performers/reviewers are assigned in Sprint Planning. |
 | Sprint 5 / M5: PA5 final delivery | Forecast D1-D21; calendar dates pending | Agreed scope complete, reviewed and executed test suite, linked defect/fix records, final documents, reflections, source/artifacts and all-member demonstration. | TV5 coordinates; TV4 leads testing, TV1/TV3 support integration, TV2 maintains documentation. |
@@ -533,7 +533,7 @@ Only PA2 has a confirmed calendar baseline in this schedule. For Sprint 3, D1 me
 
 | Date | Planned Milestone / Handoff | Primary Coordination | Jira / Acceptance Evidence |
 |---|---|---|---|
-| 10 October | Sprint Planning and initial task allocation; begin document sections and report templates. | TV5 with all members; TV2 maintains Jira. | P1, O1/O3, V1, Q6 and individual G1 records. |
+| 15 October | Sprint Planning and initial task allocation; begin document sections and report templates. | TV5 with all members; TV2 maintains Jira. | P1, O1/O3, V1, Q6 and individual G1 records. |
 | 17 October | Scope/overview and initial organization, positioning, dependencies and Spec Kit setup available. | Section performers; their assigned reviewers. | P2-P3, O1-O2/O5, V2-V3 and F1-F3; reviewed source/artifacts. |
 | 19 October | Five-sprint/task plan and Jira alignment checkpoint; first Scrum meeting. | TV1 for P4-P5; TV2 for O4/O6; TV5 for meeting coordination. | SCRUM-27/28/36/38 and actual meeting record. |
 | 20 October | Schedule/build-plan drafts and major Vision feature/workflow/NFR sections due; individual training due. | TV1 for P6-P7; TV3-TV5 for their sections; all members for training. | SCRUM-29/30, relevant V/F/Q tasks and individual G2 evidence. |
