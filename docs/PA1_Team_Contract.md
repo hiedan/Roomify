@@ -2,96 +2,35 @@
 
 ## Project Information
 
-  -----------------------------------------------------------------------
-  Item                                Information
-  ----------------------------------- -----------------------------------
-  **Course**                          CS300 / CSC13002 -- Introduction to
-                                      Software Engineering
+| **Item** | **Information** |
+|---|---|
+| **Course** | CS300 / CSC13002 – Introduction to Software Engineering |
+| **Assignment** | PA1 – Project Assignment 1 |
+| **Group** | **Group 13** |
+| **Project Name** | **Roomify** |
+| **Team Members** | Nguyễn Hữu Nghĩa<br>Từ Thái Hưng<br>Đặng Hiển<br>Đỗ Quốc Đại<br>Võ Minh Khang |
+| **Date** | 06/10/2026 |
 
-  **Assignment**                      PA1 -- Project Assignment 1
-
-  **Group**                           Group \[Group ID\]
-
-  **Project Name**                    \[Project Name\]
-
-  **Team Members**                    \[Member 1\], \[Member 2\],
-                                      \[Member 3\], \[Member 4\],
-                                      \[Member 5\]
-
-  **Date**                            \[DD/MM/YYYY\]
-  -----------------------------------------------------------------------
-
-> **Note:** All team members are expected to act as **full-stack
-> engineers** throughout the project. The roles below represent primary
-> responsibilities and leadership areas; they do not mean that a member
-> is restricted to one technical area.
-
-------------------------------------------------------------------------
+> **Note:** All team members are expected to act as **full-stack engineers** throughout the project. The roles below represent primary responsibilities and leadership areas; they do not mean that a member is restricted to one technical area.
 
 ## 1. Team Roles and Responsibilities
+
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
 
 Each team member has a primary responsibility to ensure that important
 areas of the project have clear ownership. However, all members are
 responsible for contributing to implementation, reviewing code, testing,
 documentation, and supporting other members when necessary.
 
-  -----------------------------------------------------------------------
-  Member                  Primary Role            Primary
-                                                  Responsibilities
-  ----------------------- ----------------------- -----------------------
-  **\[Member 1\]**        Project Manager / Scrum Coordinate the team
-                          Coordinator             schedule; organize
-                                                  Scrum meetings; track
-                                                  Sprint progress;
-                                                  maintain Jira tasks;
-                                                  monitor deadlines; help
-                                                  resolve blockers;
-                                                  coordinate
-                                                  communication with the
-                                                  team.
-
-  **\[Member 2\]**        UI/UX Lead              Design and maintain the
-                                                  user interface; create
-                                                  wireframes/prototypes
-                                                  when necessary; ensure
-                                                  UI consistency;
-                                                  implement frontend
-                                                  components; review
-                                                  usability and
-                                                  responsive behavior.
-
-  **\[Member 3\]**        Backend Lead            Design and implement
-                                                  backend services and
-                                                  APIs; manage
-                                                  database-related tasks;
-                                                  ensure API consistency;
-                                                  handle backend
-                                                  integration; review
-                                                  backend code and
-                                                  technical decisions.
-
-  **\[Member 4\]**        Testing & Quality Lead  Define testing
-                                                  activities; create and
-                                                  maintain test cases;
-                                                  perform functional and
-                                                  integration testing;
-                                                  report and track bugs;
-                                                  support quality
-                                                  assurance and
-                                                  regression testing.
-
-  **\[Member 5\]**        Technical &             Maintain project
-                          Documentation Lead      documentation; prepare
-                                                  technical documentation
-                                                  and diagrams; maintain
-                                                  README and project
-                                                  reports; support
-                                                  technical consistency;
-                                                  help document
-                                                  decisions, setup
-                                                  procedures, and
-                                                  development processes.
-  -----------------------------------------------------------------------
+| **Member** | **Primary Role** | **Primary Responsibilities** |
+|---|---|---|
+| **Võ Minh Khang** | **Project Manager / Scrum Coordinator** | Coordinate the team schedule; organize Scrum meetings; track Sprint progress; maintain Jira tasks; monitor deadlines; help resolve blockers; coordinate communication with the team. |
+| **Đỗ Quốc Đại** | **UI/UX Lead** | Design and maintain the user interface; create wireframes/prototypes when necessary; ensure UI consistency; implement frontend components; review usability and responsive behavior. |
+| **Đặng Hiển** | **Backend Lead** | Design and implement backend services and APIs; manage database-related tasks; ensure API consistency; handle backend integration; review backend code and technical decisions. |
+| **Từ Thái Hưng** | **Testing & Quality Lead** | Define testing activities; create and maintain test cases; perform functional and integration testing; report and track bugs; support quality assurance and regression testing. |
+| **Nguyễn Hữu Nghĩa** | **Technical & Documentation Lead** | Maintain project documentation; prepare technical documentation and diagrams; maintain README and project reports; support technical consistency; help document decisions, setup procedures, and development processes. |
 
 ### Shared Responsibilities
 
@@ -115,25 +54,24 @@ All members agree to:
 
 ## 2. Communication Plan
 
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
+
 ### Communication Tools
 
 The team will use the following communication channels:
-
-  -----------------------------------------------------------------------
-  Purpose                             Tool
   ----------------------------------- -----------------------------------
-  Team announcements and              Moodle / Course Facebook Group
-  course-related communication        
+  Team announcements and course-related communication :             Moodle 
+         
 
-  Daily team communication            \[Messenger / Discord / Teams /
-                                      Slack\]
+  Daily team communication :           Zalo
 
-  Task management                     Jira
+  Task management     :                Jira
 
-  Source code and documentation       Git / GitHub
+  Source code and documentation :      Git / GitHub
 
-  Online meetings                     \[Google Meet / Microsoft Teams /
-                                      Discord\]
+  Online meetings             :        Google Meet
   -----------------------------------------------------------------------
 
 ### Communication Rules
@@ -169,6 +107,10 @@ appropriate.
 
 ## 3. Work Schedule and Deadlines
 
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
+
 The team will organize work according to the Scrum Sprint structure
 specified for the project. Each PA Sprint is approximately **2--3
 weeks**.
@@ -187,16 +129,39 @@ weeks**.
 
 ### Milestones
 
-  Milestone                            Target     Responsible
-  ------------------------------------ ---------- ----------------------------------
-  Project setup and repository setup   \[Date\]   All members
-  Requirements / initial analysis      \[Date\]   All members
-  UI/UX preparation                    \[Date\]   UI/UX Lead + team
-  Backend / database preparation       \[Date\]   Backend Lead + team
-  Core feature implementation          \[Date\]   Assigned members
-  Integration and testing              \[Date\]   Testing Lead + all members
-  Documentation completion             \[Date\]   Documentation Lead + all members
-  Final review and submission          \[Date\]   Project Manager + all members
+  |Milestone                 |           Target   |  Responsible |
+  |---|---|---|
+  |Project setup and repository setup |  10/10/2026   |All members|
+  |Requirements / initial analysis    |  01/12/2026   |All members|
+  |UI/UX preparation                  |  02/12/2026   |UI/UX Lead + team|
+  |Backend / database preparation     |  03/12/2026  |Backend Lead + team|
+  |Core feature implementation        |  04/12/2026  |Assigned members|
+  |Integration and testing            |  05/12/2026  |Testing Lead + all members|
+  |Documentation completion           |  06/12/2026  |Documentation Lead + all members|
+  |Final review and submission        |  07/12/2026 |Project Manager + all members|
+
+### Team Members' Availability
+
+At the beginning of each Sprint, team members will identify the time periods when they are available for **team meetings** and **project work**. This information will be used to schedule meetings and assign tasks fairly.
+
+Each member should provide:
+
+- Regular days and time periods available for team meetings.
+- Regular days and time periods available for individual project work.
+- Any fixed class, work, personal, or other commitments that may affect availability.
+- Any periods of temporary unavailability that may affect Sprint deadlines.
+
+The team will maintain the following availability table and update it when members' schedules change:
+
+| Member | Available for Team Meetings | Available for Project Work | Unavailable / Notes |
+|---|---|---|---|
+| Võ Minh Khang | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Đỗ Quốc Đại | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Từ Thái Hưng | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Đặng Hiển | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+| Nguyễn Hữu Nghĩa | Sat/Sun 18:00–22:00 | Tue/Thu/Sat/Sun 18:00–22:00 | No special constraints |
+
+When scheduling a team meeting, the team should prioritize a time that is reasonably available for all members. If a member cannot attend an important meeting, they should notify the team in advance and review the meeting notes afterward.
 
 ### Availability and Contingency
 
@@ -214,6 +179,10 @@ weeks**.
 ------------------------------------------------------------------------
 
 ## 4. Code and Documentation Standards
+
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
 
 ### Coding Standards
 
@@ -279,6 +248,10 @@ Project documentation should:
 
 ## 5. Accountability and Performance
 
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
+
 ### Contribution Criteria
 
 Each member's contribution will be evaluated based on:
@@ -325,6 +298,10 @@ that every member contributes meaningfully.
 
 ## 6. Decision-Making Process
 
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
+
 The team will use the following decision-making process:
 
 ### Normal Decisions
@@ -360,6 +337,10 @@ When an urgent decision is required to prevent a major blocker:
 ------------------------------------------------------------------------
 
 ## 7. Conflict Resolution
+
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
 
 The team will handle conflicts using the following escalation process:
 
@@ -408,6 +389,10 @@ may be escalated to the **TA or instructor** for guidance.
 
 ## 8. Review and Update Process
 
+**Performed by:** Nguyễn Hữu Nghĩa  
+**Reviewed by:** Đỗ Quốc Đại  
+**Edited by:** Võ Minh Khang
+
 This Team Contract is a living document and may be updated when the
 team's working conditions change.
 
@@ -431,15 +416,6 @@ The team will review the contract:
 5.  The updated document is committed to the Git repository.
 6.  The team members are informed of the change.
 
-### Version History
-
-  Version   Date             Change                  Author
-  --------- ---------------- ----------------------- -----------------
-  1.0       \[DD/MM/YYYY\]   Initial Team Contract   \[Member Name\]
-  1.1       \[DD/MM/YYYY\]   \[Description\]         \[Member Name\]
-
-------------------------------------------------------------------------
-
 ## Team Agreement
 
 By participating in this project, all team members agree to:
@@ -460,21 +436,12 @@ By participating in this project, all team members agree to:
 
 ### Team Member Approval
 
-  -----------------------------------------------------------------------
-  Member            Role              Confirmation /    Date
-                                      Signature         
-  ----------------- ----------------- ----------------- -----------------
-  \[Member 1\]      Project Manager / \[Confirmed\]     \[Date\]
-                    Scrum Coordinator                   
+| Member | Role | Confirmation / Signature | Date |
+|---|---|---|---|
+| Võ Minh Khang | Project Manager / Scrum Coordinator | Confirmed | 06/10/2026 |
+| Đỗ Quốc Đại | UI/UX Lead | Confirmed | 06/10/2026 |
+| Đặng Hiển | Backend Lead | Confirmed | 06/10/2026 |
+| Từ Thái Hưng | Testing & Quality Lead | Confirmed | 06/10/2026 |
+| Nguyễn Hữu Nghĩa | Technical & Documentation Lead | Confirmed | 06/10/2026 |
 
-  \[Member 2\]      UI/UX Lead        \[Confirmed\]     \[Date\]
-
-  \[Member 3\]      Backend Lead      \[Confirmed\]     \[Date\]
-
-  \[Member 4\]      Testing & Quality \[Confirmed\]     \[Date\]
-                    Lead                                
-
-  \[Member 5\]      Technical &       \[Confirmed\]     \[Date\]
-                    Documentation                       
-                    Lead                                
-  -----------------------------------------------------------------------
+------------------------------------------------------------------------

@@ -1,12 +1,25 @@
 const path = require('path');
-const { runner } = require('node-pg-migrate');
+const { execSync } = require('child_process');
 
 // Runs once before all tests: apply migrations to the TEST database.
 module.exports = async () => {
   process.env.NODE_ENV = 'test';
   const config = require('../src/config');
-  if (!new URL(config.databaseUrl).pathname.endsWith('_test')) {
-    throw new Error('Tests must use a dedicated database ending in _test');
+  let testUrl;
+  let developmentUrl;
+  try {
+    testUrl = new URL(config.databaseUrl);
+    developmentUrl = new URL(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/nhatro');
+  } catch {
+    // Never print a malformed connection string: it may contain credentials.
+    throw new Error('Integration tests require valid development/test database URLs');
   }
-  await runner({ databaseUrl: config.databaseUrl, dir: path.join(__dirname, '../migrations'), direction: 'up', migrationsTable: 'pgmigrations' });
+  if (testUrl.pathname !== '/nhatro_test' || developmentUrl.pathname === testUrl.pathname) {
+    throw new Error('Integration tests require nhatro_test separate from the development database');
+  }
+  execSync('npx node-pg-migrate -m migrations up', {
+    cwd: path.join(__dirname, '..'),
+    stdio: 'inherit',
+    env: { ...process.env, DATABASE_URL: config.databaseUrl },
+  });
 };

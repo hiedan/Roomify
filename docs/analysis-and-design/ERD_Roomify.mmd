@@ -7,6 +7,8 @@ erDiagram
   LISTINGS ||--o{ NEARBY_PLACES : near
   USERS ||--o{ FAVORITES : saves
   LISTINGS ||--o{ FAVORITES : saved_in
+  USERS ||--o{ ADMIN_ACTION_AUDITS : performs
+  USERS ||--o{ ADMIN_ACTION_AUDITS : targets
   USERS {
     bigint id PK
     string full_name
@@ -65,4 +67,13 @@ erDiagram
     bigint user_id PK
     bigint listing_id PK
     timestamp created_at
+  }
+  ADMIN_ACTION_AUDITS {
+    bigint id PK
+    bigint actor_user_id FK
+    bigint target_user_id FK
+    string action_type
+    string previous_value
+    string new_value
+    timestamptz created_at
   }
