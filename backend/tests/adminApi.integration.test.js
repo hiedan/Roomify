@@ -1,6 +1,6 @@
+const { assertTestTarget } = require('../src/databaseConfig');
 const request = require('supertest');
 const { randomUUID } = require('crypto');
-const config = require('../src/config');
 const { query, pool } = require('../src/db');
 const auth = require('../src/services/authService');
 const { createApp } = require('../src/app');
@@ -11,10 +11,7 @@ const PASSWORD = 'SyntheticAdminFixture!123';
 let passwordHash;
 
 beforeAll(async () => {
-  if (process.env.NODE_ENV !== 'test' || new URL(config.databaseUrl).pathname !== '/nhatro_test') {
-    throw new Error('Admin fixtures require nhatro_test');
-  }
-  expect((await query('SELECT current_database() AS name')).rows[0].name).toBe('nhatro_test');
+  assertTestTarget();
   passwordHash = await auth.hashPassword(PASSWORD);
 });
 
@@ -35,6 +32,10 @@ async function account(role = 'tenant', isActive = true, id = null) {
     [id, 'Admin Synthetic User', `admin-test-${randomUUID()}@gmail.com`, passwordHash, role, isActive]
   );
   ids.push(rows[0].id);
+  if (role === 'tenant') {
+    await query(`INSERT INTO landlord_requests (user_id, contact_name, phone, property_address)
+      VALUES ($1, 'Synthetic Applicant', '0901234567', 'Synthetic property address')`, [rows[0].id]);
+  }
   return { ...rows[0], token: auth.issueToken(rows[0]).token };
 }
 

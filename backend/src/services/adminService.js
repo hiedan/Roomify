@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const { pool } = require('../db');
+const { pool, query } = require('../db');
 const AppError = require('../utils/AppError');
 const { isDatabaseId } = require('../utils/databaseId');
 const { safeProfile } = require('./authAccountService');
@@ -7,6 +7,23 @@ const { safeProfile } = require('./authAccountService');
 const targetSchema = z.string().refine(isDatabaseId, 'A valid target account ID is required');
 const roleSchema = z.object({ role: z.enum(['tenant', 'landlord']) }).strict();
 const statusSchema = z.object({ isActive: z.boolean() }).strict();
+const lookupSchema = z.object({
+  identifier: z.string().trim().max(255).refine(value =>
+    isDatabaseId(value) || z.string().email().safeParse(value).success, 'A valid account ID or email is required'),
+}).strict();
+
+async function findAccount(input) {
+  const { identifier } = lookupSchema.parse(input);
+  const byId = isDatabaseId(identifier);
+  const { rows } = await query(
+    byId
+      ? 'SELECT id, full_name, email, role, is_active FROM users WHERE id = $1'
+      : 'SELECT id, full_name, email, role, is_active FROM users WHERE email = $1',
+    [byId ? identifier : identifier.toLowerCase()]
+  );
+  if (!rows[0]) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy tài khoản với ID hoặc email này.');
+  return { user: safeProfile(rows[0]) };
+}
 
 async function changeAccount(actorId, targetId, kind, value) {
   if (!isDatabaseId(actorId)) {
@@ -36,6 +53,18 @@ async function changeAccount(actorId, targetId, kind, value) {
       return { user: safeProfile(target), changed: false };
     }
 
+    // The legacy role endpoint also acts as approval; it cannot bypass an application.
+    let landlordRequestId;
+    if (kind === 'role' && value === 'landlord') {
+      const pending = await client.query(
+        "SELECT id FROM landlord_requests WHERE user_id = $1 AND status = 'pending' FOR UPDATE", [targetId]
+      );
+      if (!pending.rows.length) {
+        throw new AppError(409, 'LANDLORD_REQUEST_REQUIRED', 'A pending landlord application is required before granting landlord access');
+      }
+      landlordRequestId = pending.rows[0].id;
+    }
+
     // These are fixed statements; no client-supplied SQL identifiers are used.
     const sql = kind === 'role'
       ? 'UPDATE users SET role = $1 WHERE id = $2 RETURNING id, full_name, email, role, is_active'
@@ -48,6 +77,12 @@ async function changeAccount(actorId, targetId, kind, value) {
        (actor_user_id, target_user_id, action_type, previous_value, new_value)
        VALUES ($1, $2, $3, $4, $5)`, [actorId, targetId, action, String(previous), String(value)]
     );
+    if (landlordRequestId) {
+      await client.query(
+        "UPDATE landlord_requests SET status = 'approved', reviewed_by = $1, reviewed_at = CURRENT_TIMESTAMP WHERE id = $2",
+        [actorId, landlordRequestId]
+      );
+    }
     await client.query('COMMIT');
     return { user: safeProfile(updated.rows[0]), changed: true };
   } catch (err) {
@@ -74,4 +109,4 @@ async function changeStatus(actorId, targetId, input) {
   return changeAccount(actorId, id, 'status', isActive);
 }
 
-module.exports = { changeRole, changeStatus };
+module.exports = { findAccount, changeRole, changeStatus };

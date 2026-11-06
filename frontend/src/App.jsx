@@ -4,6 +4,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import LandlordDashboardPage from './pages/LandlordDashboardPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import BecomeLandlordPage from './pages/BecomeLandlordPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -39,6 +40,10 @@ function AppShell() {
             <DashboardPage />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/become-landlord"
+        element={<ProtectedRoute><RoleRoute allowedRoles={['tenant']}><BecomeLandlordPage /></RoleRoute></ProtectedRoute>}
       />
       <Route
         path="/landlord"

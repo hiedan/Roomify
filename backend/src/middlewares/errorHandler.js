@@ -12,7 +12,6 @@ function notFound(_req, _res, next) {
 }
 
 // Express recognizes error handlers by their 4 parameters, so keep `_next`.
-// eslint-disable-next-line no-unused-vars
 function errorHandler(err, _req, res, _next) {
   if (err instanceof ZodError) {
     const message = err.issues.map((i) => {

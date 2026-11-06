@@ -1,3 +1,4 @@
+const { assertTestTarget } = require('../src/databaseConfig');
 const express = require('express');
 const request = require('supertest');
 const { randomUUID } = require('crypto');
@@ -26,11 +27,7 @@ policies.use(errorHandler);
 const policyApi = request(policies);
 
 beforeAll(async () => {
-  const selected = new URL(config.databaseUrl);
-  if (process.env.NODE_ENV !== 'test' || selected.pathname !== '/nhatro_test') {
-    throw new Error('Auth integration fixtures require nhatro_test');
-  }
-  expect((await query('SELECT current_database() AS name')).rows[0].name).toBe('nhatro_test');
+  assertTestTarget();
   passwordHash = await auth.hashPassword(PASSWORD);
 });
 

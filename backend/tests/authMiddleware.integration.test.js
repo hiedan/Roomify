@@ -1,7 +1,7 @@
 const express = require('express');
 const request = require('supertest');
 const { randomUUID } = require('crypto');
-const config = require('../src/config');
+const { assertTestTarget } = require('../src/databaseConfig');
 const { query } = require('../src/db');
 const { issueToken } = require('../src/services/authService');
 const { requireAuth } = require('../src/middlewares/auth');
@@ -16,13 +16,7 @@ const api = request(app);
 const fixtureIds = [];
 
 beforeAll(async () => {
-  const testUrl = new URL(config.databaseUrl);
-  const devUrl = new URL(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/nhatro');
-  if (process.env.NODE_ENV !== 'test' || testUrl.pathname === devUrl.pathname) {
-    throw new Error('T005 fixtures require a separate test database');
-  }
-  const { rows } = await query('SELECT current_database() AS name');
-  expect(rows[0].name).toBe(decodeURIComponent(testUrl.pathname.slice(1)));
+  assertTestTarget();
 });
 
 afterEach(async () => {

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AuthLayout, { FormField, SocialButtons } from '../components/AuthLayout';
+import Icon from '../components/Icon';
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ fullName: '', email: '', password: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmation: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -13,89 +15,37 @@ export default function RegisterPage() {
     event.preventDefault();
     if (loading) return;
     setError('');
-    setLoading(true);
-
-    try {
-      const established = await register({
-        fullName: form.fullName,
-        email: form.email,
-        password: form.password,
-      });
-
-      if (established) navigate('/dashboard', { replace: true });
-    } catch (err) {
-      setError(err.message || 'Registration failed');
-    } finally {
-      setLoading(false);
+    if (form.password !== form.confirmation) {
+      setError('Mật khẩu xác nhận không khớp. Vui lòng nhập lại.');
+      return;
     }
+    setLoading(true);
+    try {
+      const established = await register({ fullName: form.fullName, email: form.email, password: form.password });
+      if (established) navigate('/dashboard', { replace: true });
+    } catch (err) { setError(err.message || 'Không thể đăng ký. Vui lòng thử lại.'); }
+    finally { setLoading(false); }
   };
+  const update = key => event => setForm({ ...form, [key]: event.target.value });
 
-  return (
-    <div className="auth-shell">
-      <form className="auth-form" onSubmit={handleSubmit} aria-busy={loading}>
-        <h1 className="auth-title">Create account</h1>
-
-        <div className="field-group">
-          <label className="field-label" htmlFor="fullName">Full name</label>
-          <div className="input-wrap">
-            <span className="input-icon">👤</span>
-            <input
-              id="fullName"
-              autoComplete="name"
-              className="auth-input"
-              type="text"
-              value={form.fullName}
-              onChange={(event) => setForm({ ...form, fullName: event.target.value })}
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="field-group">
-          <label className="field-label" htmlFor="email">Email</label>
-          <div className="input-wrap">
-            <span className="input-icon">@</span>
-            <input
-              id="email"
-              autoComplete="email"
-              className="auth-input"
-              type="email"
-              value={form.email}
-              onChange={(event) => setForm({ ...form, email: event.target.value })}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="field-group">
-          <label className="field-label" htmlFor="password">Password</label>
-          <div className="input-wrap">
-            <span className="input-icon">🔒</span>
-            <input
-              id="password"
-              autoComplete="new-password"
-              className="auth-input"
-              type="password"
-              value={form.password}
-              onChange={(event) => setForm({ ...form, password: event.target.value })}
-              placeholder="Create a password"
-              required
-            />
-          </div>
-        </div>
-
-        <button type="submit" className="primary-button" disabled={loading}>
-          {loading ? 'Creating account...' : 'Sign Up'}
-        </button>
-
-        {error ? <div className="message error-message" role="alert">{error}</div> : null}
-
-        <p className="secondary-text">
-          Already have an account? <Link to="/login">Sign In</Link>
-        </p>
-      </form>
-    </div>
-  );
+  return <AuthLayout variant="register" title="Tạo tài khoản mới"
+    subtitle="Tạo tài khoản để tìm phòng và bắt đầu sử dụng Roomify.">
+    <form className="auth-form" onSubmit={handleSubmit} aria-busy={loading}>
+      <FormField id="fullName" label="Họ và tên" icon="user" autoComplete="name"
+        value={form.fullName} onChange={update('fullName')} placeholder="Nguyễn Văn A" required minLength={2} maxLength={100} disabled={loading} />
+      <FormField id="email" label="Địa chỉ Email" icon="mail" type="email" autoComplete="email"
+        value={form.email} onChange={update('email')} placeholder="ban@gmail.com" required disabled={loading} />
+      <FormField id="password" label="Mật khẩu" icon="lock" type="password" autoComplete="new-password"
+        value={form.password} onChange={update('password')} placeholder="Tối thiểu 8 ký tự" required minLength={8} disabled={loading} />
+      <FormField id="confirmation" label="Xác nhận mật khẩu" icon="lock" type="password" autoComplete="new-password"
+        value={form.confirmation} onChange={update('confirmation')} placeholder="Nhập lại mật khẩu" required
+        aria-invalid={!!error && form.password !== form.confirmation} aria-describedby={error ? 'register-error' : undefined} disabled={loading} />
+      <button type="submit" className="primary-button" disabled={loading}>
+        {loading ? 'Đang tạo tài khoản...' : 'Đăng ký'}<Icon name="arrow" size={18} />
+      </button>
+      {error && <div id="register-error" className="message error-message" role="alert">{error}</div>}
+    </form>
+    <SocialButtons register />
+    <p className="secondary-text">Bạn đã có tài khoản? <Link to="/login">Đăng nhập</Link></p>
+  </AuthLayout>;
 }

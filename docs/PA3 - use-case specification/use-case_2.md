@@ -655,7 +655,7 @@ If at step 2 or 3 of the Basic Flow, the **Google Maps Platform** is unreachable
 ### 3. Special Requirements
 
 #### 3.1 Persist-Once Read-Many Architecture
-* Nearby place data must be persisted in the Roomify database during **UC-21** so that **UC-08 (View Listing Details)** reads directly from the local database without calling the Google Maps API on every page view.
+* Nearby place data must be persisted in Roomify's Supabase PostgreSQL database during **UC-21** so that **UC-08 (View Listing Details)** reads the stored data through the backend without calling the Google Maps API on every page view.
 
 ### 4. Preconditions
 
