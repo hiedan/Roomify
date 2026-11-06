@@ -1,3 +1,4 @@
+const { assertTestTarget } = require('../src/databaseConfig');
 const express = require('express');
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
@@ -35,10 +36,7 @@ app.use(errorHandler);
 const api = request(app);
 
 beforeAll(async () => {
-  if (process.env.NODE_ENV !== 'test' || new URL(config.databaseUrl).pathname !== '/nhatro_test') {
-    throw new Error('Ownership fixtures require nhatro_test');
-  }
-  expect((await query('SELECT current_database() AS name')).rows[0].name).toBe('nhatro_test');
+  assertTestTarget();
 });
 
 beforeEach(() => mutate.mockClear());

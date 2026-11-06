@@ -4,6 +4,7 @@ const { sendSuccess } = require('./utils/response');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const listingRoutes = require('./routes/listingRoutes');
+const landlordRequestRoutes = require('./routes/landlordRequestRoutes');
 
 function createApp() {
   const app = express();
@@ -13,6 +14,7 @@ function createApp() {
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1/admin', adminRoutes);
   app.use('/api/v1/listings', listingRoutes);
+  app.use('/api/v1/landlord-requests', landlordRequestRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

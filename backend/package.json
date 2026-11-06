@@ -7,9 +7,12 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "migrate": "node-pg-migrate -m migrations up",
-    "migrate:down": "node-pg-migrate -m migrations down",
+    "migrate": "node scripts/database.js migrate",
+    "migrate:test": "node scripts/database.js migrate --test",
+    "db:check": "node scripts/database.js check",
+    "db:check:test": "node scripts/database.js check --test",
     "test": "jest --runInBand",
+    "test:unit": "jest --config jest.unit.config.js --runInBand",
     "lint": "eslint ."
   },
   "dependencies": {

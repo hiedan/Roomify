@@ -1,49 +1,54 @@
-jest.mock('child_process', () => ({ execSync: jest.fn() }));
-jest.mock('../src/config', () => ({ databaseUrl: 'postgres://postgres:postgres@localhost:5432/nhatro_test' }));
-
-const { execSync } = require('child_process');
-const config = require('../src/config');
+jest.mock('../scripts/database', () => ({ migrate: jest.fn(), acquireTestLease: jest.fn(), releaseTestLease: jest.fn(), safeMessage: jest.fn(() => 'Safe migration failure') }));
+const tools = require('../scripts/database');
 const setup = require('./globalSetup');
-const originalDev = process.env.DATABASE_URL;
+const teardown = require('./globalTeardown');
+const { testEnvironment, applicationRef, sessionUrl } = require('./databaseEnvironment');
+const original = { ...process.env };
+const lease = {};
 
 beforeEach(() => {
   jest.clearAllMocks();
-  process.env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/nhatro';
-  config.databaseUrl = 'postgres://postgres:postgres@localhost:5432/nhatro_test';
+  Object.assign(process.env, testEnvironment());
+  delete process.env.TEST_MIGRATION_DATABASE_URL;
+  delete process.env.MIGRATION_DATABASE_URL;
+  tools.acquireTestLease.mockResolvedValue(lease);
+  tools.migrate.mockResolvedValue({ applied: [] });
+  delete global.__ROOMIFY_TEST_LEASE;
 });
-afterAll(() => {
-  if (originalDev === undefined) delete process.env.DATABASE_URL;
-  else process.env.DATABASE_URL = originalDev;
+afterEach(() => {
+  for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
+  Object.assign(process.env, original);
+  delete global.__ROOMIFY_TEST_LEASE;
 });
 
-test('migration setup selects only the separate configured test database', async () => {
+test('setup validates the test project, holds its coordination lease through migrations and releases it at teardown', async () => {
   await setup();
-  expect(execSync).toHaveBeenCalledTimes(1);
-  expect(execSync.mock.calls[0][1].env).toMatchObject({ NODE_ENV: 'test', DATABASE_URL: config.databaseUrl });
+  expect(tools.acquireTestLease).toHaveBeenCalledTimes(1);
+  expect(tools.migrate).toHaveBeenCalledWith('test', lease);
+  expect(tools.releaseTestLease).not.toHaveBeenCalled();
+  await teardown();
+  expect(tools.releaseTestLease).toHaveBeenCalledWith(lease);
 });
 
 test.each([
-  'postgres://postgres:postgres@localhost:5432/nhatro',
-  'postgres://postgres:postgres@localhost:5432/other_database',
-  'invalid-connection-synthetic-private-marker',
-])('refuses an unsafe migration target before starting the CLI', async (databaseUrl) => {
-  config.databaseUrl = databaseUrl;
-  await expect(setup()).rejects.toThrow(/database|URL/i);
-  expect(execSync).not.toHaveBeenCalled();
+  { NODE_ENV: 'development' }, { TEST_DATABASE_URL: '' }, { TEST_SUPABASE_PROJECT_REF: '' },
+  { TEST_DATABASE_URL: sessionUrl(applicationRef), TEST_SUPABASE_PROJECT_REF: applicationRef },
+  { TEST_MIGRATION_DATABASE_URL: sessionUrl(applicationRef) },
+])('unsafe setup cannot acquire a connection or migrate', async settings => {
+  Object.assign(process.env, settings);
+  await expect(setup()).rejects.toThrow();
+  expect(tools.acquireTestLease).not.toHaveBeenCalled();
+  expect(tools.migrate).not.toHaveBeenCalled();
 });
 
-test('rejects a test/development database alias even with the nhatro_test name', async () => {
-  process.env.DATABASE_URL = config.databaseUrl;
-  await expect(setup()).rejects.toThrow(/separate/i);
-  expect(execSync).not.toHaveBeenCalled();
+test('migration failures release the lease and do not expose driver errors', async () => {
+  tools.migrate.mockRejectedValue(new Error('Synthetic private connection string'));
+  await expect(setup()).rejects.toThrow('Safe migration failure');
+  expect(tools.releaseTestLease).toHaveBeenCalledWith(lease);
 });
 
-test('invalid URL configuration errors disclose no raw connection string', async () => {
-  const marker = 'synthetic-private-url';
-  config.databaseUrl = `not-a-valid-url-${marker}`;
-  let error;
-  try { await setup(); } catch (caught) { error = caught; }
-  expect(error).toBeInstanceOf(Error);
-  expect(error.message.includes(marker)).toBe(false);
-  expect(execSync).not.toHaveBeenCalled();
+test('lease connection errors are sanitized before Jest can print them', async () => {
+  tools.acquireTestLease.mockRejectedValueOnce(new Error('postgresql://synthetic-private-password'));
+  await expect(setup()).rejects.toThrow('Safe migration failure');
+  expect(tools.migrate).not.toHaveBeenCalled();
 });

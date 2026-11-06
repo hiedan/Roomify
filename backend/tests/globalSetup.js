@@ -1,25 +1,18 @@
-const path = require('path');
-const { execSync } = require('child_process');
+require('../src/config');
+const { assertTestTarget } = require('../src/databaseConfig');
+const { migrate, acquireTestLease, releaseTestLease, safeMessage } = require('../scripts/database');
 
-// Runs once before all tests: apply migrations to the TEST database.
 module.exports = async () => {
-  process.env.NODE_ENV = 'test';
-  const config = require('../src/config');
-  let testUrl;
-  let developmentUrl;
+  assertTestTarget();
+  let lease;
   try {
-    testUrl = new URL(config.databaseUrl);
-    developmentUrl = new URL(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/nhatro');
-  } catch {
-    // Never print a malformed connection string: it may contain credentials.
-    throw new Error('Integration tests require valid development/test database URLs');
+    lease = await acquireTestLease();
+    await migrate('test', lease);
+    global.__ROOMIFY_TEST_LEASE = lease;
+  } catch (error) {
+    if (lease) {
+      try { await releaseTestLease(lease); } catch { /* Preserve the original safe failure. */ }
+    }
+    throw new Error(safeMessage(error));
   }
-  if (testUrl.pathname !== '/nhatro_test' || developmentUrl.pathname === testUrl.pathname) {
-    throw new Error('Integration tests require nhatro_test separate from the development database');
-  }
-  execSync('npx node-pg-migrate -m migrations up', {
-    cwd: path.join(__dirname, '..'),
-    stdio: 'inherit',
-    env: { ...process.env, DATABASE_URL: config.databaseUrl },
-  });
 };

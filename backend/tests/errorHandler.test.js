@@ -33,7 +33,7 @@ test('unexpected DB errors expose no SQL, credentials, hash, token, connection s
   const error = Object.assign(new Error(marker), {
     code: '23502', detail: `Failing row contains password_hash=${marker}`,
     query: `UPDATE users SET password_hash='${marker}'`,
-    connectionString: `postgres://user:${marker}@localhost/nhatro_test`,
+    connectionString: `postgresql://user:${marker}@db.bbbbbbbbbbbbbbbbbbbb.supabase.co/postgres`,
     token: `header.${marker}.signature`, stack: `Sensitive stack ${marker}`,
   });
   const result = respond(error);

@@ -3,10 +3,14 @@
 ## Prerequisites
 
 - Node.js 18+
-- PostgreSQL database with the `nhatro` and `nhatro_test` databases available
-- Environment variables set for `DATABASE_URL` and `TEST_DATABASE_URL`
+- Two separate Supabase PostgreSQL/PostGIS projects: Roomify (application) and Roomify-Test (automated tests)
+- Backend environment variables set for `DATABASE_URL`, `SUPABASE_PROJECT_REF`, `TEST_DATABASE_URL`, and `TEST_SUPABASE_PROJECT_REF`
 - `backend/` dependency installation complete
 - Optional frontend setup for UI verification: `frontend/` dependency installation complete
+
+The frontend/backend may run locally while both databases are hosted on
+Supabase. Docker Desktop/Compose and a local PostgreSQL service are not required.
+The current setup below replaces the earlier local-database instructions.
 
 ## Setup
 
@@ -17,6 +21,36 @@ npm install
 cd ../frontend
 npm install
 ```
+
+Configure your private `backend/.env` without overwriting existing values. Follow
+the [root database setup](../../../README.md#database-and-local-environment):
+
+- Roomify and Roomify-Test must have different project references. They may both
+  use the database name `postgres`; database names alone do not prove isolation.
+- Copy each project's PostgreSQL Direct or Session pooler URL from its Connect
+  settings. Use port 5432; Transaction pooler mode on 6543 is rejected.
+- `MIGRATION_DATABASE_URL` and `TEST_MIGRATION_DATABASE_URL` are optional. Each
+  must identify the same project and database as its matching runtime URL.
+- TLS verifies certificates and endpoint hostnames. If a CA is required, set
+  `DATABASE_CA_CERT` or `TEST_DATABASE_CA_CERT` to a PEM path relative to
+  `backend/`. Keep verification enabled and keep secrets out of frontend variables.
+- Shared configuration examples must contain placeholders, not database
+  passwords or real signing keys. The application still uses its existing
+  Express authentication and `pg` connection, not Supabase Auth.
+
+From `backend/`, prepare and inspect each explicitly configured target:
+
+```powershell
+npm.cmd run migrate
+npm.cmd run db:check
+npm.cmd run migrate:test
+npm.cmd run db:check:test
+```
+
+The check commands are read-only. Migration commands validate schema/history,
+apply pending versioned migrations and handle PostGIS initialization; do not
+edit applied migrations or reset the Roomify application project. No database
+operation was executed as part of this documentation update.
 
 ### JWT signing key (T004)
 
@@ -55,8 +89,23 @@ The existing integration suite requires PostgreSQL and retains its migration set
 
 ```bash
 cd backend
-npm test -- --runInBand
+npm test -- --runInBand --testTimeout=30000
 ```
+
+Jest selects the validated Roomify-Test target with `NODE_ENV=test`. Global setup
+checks project identities before migration/fixtures and holds an advisory lease
+through teardown. Both integration and browser tests use this same dedicated
+project and must run sequentially. The backend suite can reset test data;
+Roomify-Test must not contain application data that needs to be preserved.
+Run browser checks from `frontend/` only after the backend test run finishes.
+
+> Historical records: all task-by-task verification checkpoints below describe
+> earlier runs, including the former Docker/local PostgreSQL environment. Keep
+> their dates, counts and environment details as historical evidence; they do
+> not certify the current Supabase setup. Use the setup and commands above for
+> current runs. Words such as "current" or "latest" inside those archived
+> records refer to that checkpoint, not the present setup. No tests were rerun
+> for this documentation-only update.
 
 ### Focused T005 verification
 
@@ -68,11 +117,12 @@ cd backend
 npm test -- --runTestsByPath tests/authMiddleware.integration.test.js tests/app.test.js tests/db.test.js --silent
 ```
 
-Confirm `DATABASE_URL` and `TEST_DATABASE_URL` refer to separate development and
-test databases before running integration tests. Global setup migrates only the
-test database selected by `config.js` with `NODE_ENV=test`. T005 fixtures use
-synthetic users and delete only their own rows; the existing database tests also
-exercise `resetDb()` on the test database. Never point these checks at development.
+For current runs, confirm the application and test URLs/references identify the
+separate Roomify and Roomify-Test Supabase projects. Global setup migrates only
+the validated test target selected by `databaseConfig.js` with `NODE_ENV=test`.
+T005 fixtures use synthetic users and delete only their own rows; the existing
+database tests also exercise `resetDb()` on Roomify-Test. Never point these checks
+at the application project.
 The protected probe route is created only inside the integration test app.
 
 Verified on 2026-11-05 with Node.js 24.15.0 and PostgreSQL/PostGIS
@@ -117,9 +167,10 @@ npm.cmd test -- --runTestsByPath tests/authMiddleware.integration.test.js tests/
 npm.cmd run lint
 ```
 
-Run `git diff --check` from the repository root. These integration checks require
-`nhatro_test`; all fixtures and the existing reset helper run only there. The
-running Compose service/image is reused, and migrations/configuration are unchanged.
+Run `git diff --check` from the repository root. For current integration checks,
+all fixtures and the reset helper target the validated Roomify-Test Supabase
+project. The following results remain historical and do not describe a new run
+against that project.
 
 The T007–T008 descriptions overlap registration/login/session tasks in later user
 stories. The handlers and necessary API checks are implemented to make the
@@ -667,7 +718,8 @@ npm.cmd run build
 ```
 
 Run `git diff --check` from the repo root. Do not run backend DB reset tests and
-E2E simultaneously: they share the separate disposable `nhatro_test` database.
+E2E simultaneously: current runs share the separate disposable Roomify-Test
+Supabase project and its coordination lock.
 Playwright starts isolated backend/Vite servers on 127.0.0.1:4310/5175 and refuses
 existing servers. Both setup and fixture helpers guard the test target before
 migration/mutation. E2E cleans only its own synthetic users; no truncate/reset.

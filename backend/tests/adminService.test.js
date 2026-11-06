@@ -2,7 +2,7 @@ jest.mock('../src/db', () => ({ pool: { connect: jest.fn(), end: jest.fn() }, qu
 
 const { ZodError } = require('zod');
 const { pool, query } = require('../src/db');
-const { changeRole, changeStatus } = require('../src/services/adminService');
+const { findAccount, changeRole, changeStatus } = require('../src/services/adminService');
 
 const ACTOR = { id: '9007199254740993', role: 'admin', is_active: true };
 const TARGET = { id: '9223372036854775807', full_name: 'Synthetic Target', email: 'synthetic@gmail.com',
@@ -12,12 +12,46 @@ let client;
 beforeEach(() => {
   jest.clearAllMocks();
   client = { release: jest.fn(), query: jest.fn(async (sql, params) => {
+    if (sql.startsWith('SELECT id FROM landlord_requests')) return { rows: [{ id: '11' }] };
     if (sql.includes('FOR UPDATE')) return { rows: [{ ...ACTOR }, { ...TARGET }] };
     if (sql.startsWith('UPDATE users SET role')) return { rows: [{ ...TARGET, role: params[0] }] };
     if (sql.startsWith('UPDATE users SET is_active')) return { rows: [{ ...TARGET, is_active: params[0] }] };
     return { rows: [] };
   }) };
   pool.connect.mockResolvedValue(client);
+});
+
+test.each([
+  ['9007199254740993', 'id', '9007199254740993'],
+  [' 9223372036854775807 ', 'id', '9223372036854775807'],
+  [' SYNTHETIC@GMAIL.COM ', 'email', 'synthetic@gmail.com'],
+])('lookup parameterizes an exact ID or normalized email without rounding: %s', async (identifier, field, value) => {
+  query.mockResolvedValueOnce({ rows: [TARGET] });
+  expect(await findAccount({ identifier })).toEqual({ user: {
+    id: TARGET.id, fullName: TARGET.full_name, email: TARGET.email, role: TARGET.role, isActive: TARGET.is_active,
+  } });
+  expect(query).toHaveBeenCalledWith(`SELECT id, full_name, email, role, is_active FROM users WHERE ${field} = $1`, [value]);
+  expect(pool.connect).not.toHaveBeenCalled();
+});
+
+test.each(['0', '01', '9223372036854775808', 'not-an-email', "x@gmail.com' OR 1=1 --", 'x'.repeat(256)])('lookup rejects malformed identifiers before SQL: %s', async identifier => {
+  await expect(findAccount({ identifier })).rejects.toBeInstanceOf(ZodError);
+  expect(query).not.toHaveBeenCalled();
+});
+
+test('lookup reports an unknown account without echoing its identifier', async () => {
+  query.mockResolvedValueOnce({ rows: [] });
+  await expect(findAccount({ identifier: 'unknown@gmail.com' })).rejects.toMatchObject({ status: 404, code: 'NOT_FOUND' });
+});
+
+test('legacy role assignment cannot grant landlord access without a pending application', async () => {
+  const original = client.query.getMockImplementation();
+  client.query.mockImplementation((sql, params) => sql.startsWith('SELECT id FROM landlord_requests')
+    ? Promise.resolve({ rows: [] }) : original(sql, params));
+  await expect(changeRole(ACTOR.id, TARGET.id, { role: 'landlord' }))
+    .rejects.toMatchObject({ status: 409, code: 'LANDLORD_REQUEST_REQUIRED' });
+  expect(client.query.mock.calls.some(([sql]) => /^(UPDATE|INSERT)/.test(sql))).toBe(false);
+  expect(client.query.mock.calls.at(-1)).toEqual(['ROLLBACK']);
 });
 
 test.each([

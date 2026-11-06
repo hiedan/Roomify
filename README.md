@@ -1,10 +1,14 @@
 # Roomify
 
-Roomify's implemented backend uses Node.js/CommonJS, Express 4 and PostgreSQL/PostGIS.
+Roomify's implemented backend uses Node.js/CommonJS, Express 4 and Supabase PostgreSQL/PostGIS.
 This handoff describes the current authentication/admin API and listing ownership
 integration on branch `HIEN`; it
 does not certify the whole feature or its browser/business integrations complete.
 Human/peer review and user approval are pending.
+
+Verification counts recorded in this handoff are historical checkpoints from
+before the Supabase migration, not results of this documentation update. Use the
+Supabase setup below for current database connections and verification runs.
 
 ## Backend layout
 
@@ -16,10 +20,12 @@ Human/peer review and user approval are pending.
 | `backend/src/services/authService.js` | Unchanged password policy, bcrypt and HS256 JWT primitives |
 | `backend/src/services/authAccountService.js` | Strict input schemas, normalized email, transactional registration, login and safe profiles |
 | `backend/src/services/adminService.js` | Locked actor/target revalidation, role/status changes and mandatory atomic audit |
+| `backend/src/services/landlordRequestService.js` | Tenant applications, admin review and atomic landlord role grants |
 | `backend/src/services/listingService.js` | Transactional UC-17 owner-only listing deletion and FK cascade cleanup |
 | `backend/src/middlewares/auth.js` | Current-account authentication, explicit role policy and listing ownership predicate |
 | `backend/src/middlewares/errorHandler.js` | Safe validation/application/system responses and non-sensitive error logging |
-| `backend/src/config.js`, `db.js`, `utils/` | Environment selection, PostgreSQL pool, safe ID/response/error helpers |
+| `backend/src/config.js`, `databaseConfig.js`, `db.js`, `utils/` | Environment loading, Supabase project/TLS validation, PostgreSQL pool and safe ID/response/error helpers |
+| `backend/scripts/` | Validated migration commands, read-only database inspection and schema/CHECK comparison |
 | `backend/migrations/`, `tests/` | Versioned schema and unit/real PostgreSQL tests |
 
 See the [API contract](src/specs/001-user-auth/contracts/auth-api.md),
@@ -29,36 +35,30 @@ See the [API contract](src/specs/001-user-auth/contracts/auth-api.md),
 
 ## Database and local environment
 
-Prerequisites: Node.js 18+, npm, Docker Desktop/Compose, and installed backend
-dependencies. Commands below use PowerShell on Windows.
-
-From the repository root:
-
-```powershell
-docker compose up -d db
-docker compose exec -T db pg_isready -U postgres
-```
-
-The existing Compose service uses `postgis/postgis:16-3.4`, port 5432 and a
-persistent volume. Fresh initialization creates `nhatro` and `nhatro_test` via
-`docker/init.sql`. An existing volume is retained; do not delete it to repair setup.
-The review reused the running container/image. If this terminal cannot find
-`docker`, the installed Docker Desktop CLI may need to be added to its PATH;
-the observed installation is under
-`$env:LOCALAPPDATA\Programs\DockerDesktop\resources\bin`.
+Prerequisites: Node.js 18+, npm, and access to two separate Supabase projects:
+**Roomify** for the application and **Roomify-Test** for automated tests.
+The frontend and backend run locally; their databases are hosted on Supabase.
+Docker Desktop, Compose and a local PostgreSQL service are not required.
+Commands below use PowerShell on Windows.
 
 ```powershell
 cd backend
 npm.cmd ci
-if (!(Test-Path .env)) { Copy-Item .env.example .env }
+if (!(Test-Path .env)) { New-Item -ItemType File -Path .env | Out-Null }
 ```
 
-Configure the existing local `.env` without overwriting it:
+Configure `backend/.env` with your own private connection values without
+overwriting an existing configuration. Use placeholder values in shared examples;
+do not copy another developer's passwords or signing key.
 
 | Variable | Required use |
 |---|---|
-| `DATABASE_URL` | Development database `nhatro` |
-| `TEST_DATABASE_URL` | Separate disposable test database `nhatro_test` |
+| `DATABASE_URL` | Application PostgreSQL connection URL from the Roomify project's Connect settings |
+| `SUPABASE_PROJECT_REF` | Roomify project reference matching `DATABASE_URL` |
+| `TEST_DATABASE_URL` | PostgreSQL connection URL for the separate Roomify-Test project |
+| `TEST_SUPABASE_PROJECT_REF` | Roomify-Test project reference matching `TEST_DATABASE_URL`; must differ from Roomify |
+| `MIGRATION_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | Optional migration URLs; each must match its environment's runtime project and database |
+| `DATABASE_CA_CERT` / `TEST_DATABASE_CA_CERT` | Optional PEM CA certificate paths when needed by the selected endpoint; paths resolve relative to `backend/` |
 | `JWT_SECRET` | Private, randomly generated, non-placeholder string of at least 32 UTF-8 bytes |
 | `PORT` | Optional HTTP port; default 3000 |
 
@@ -68,34 +68,58 @@ Do not commit or share the output. The JWT service rejects the example placehold
 and config fallback; missing/unsafe keys fail with `500 AUTH_CONFIG_ERROR`.
 Changing the signing key invalidates older tokens. `.env` is ignored by Git.
 
+The backend uses `pg` with a Supabase **Direct** or **Session pooler** connection
+on port 5432. Transaction pooler mode on port 6543 and connection-override URL
+parameters are rejected. TLS verifies the certificate and endpoint hostname;
+configured CA certificates supplement the system trust roots. Do not disable TLS
+verification. Connection URLs, CA files and the JWT secret belong to the backend,
+not frontend `VITE_*` variables. This setup uses the existing Express
+authentication APIs, not Supabase Auth or a browser database connection.
+
+Application tables and migration history use `public`; PostGIS is supported in
+`public` or `extensions`. Both projects may use a database named `postgres`:
+isolation is checked by project identity, not by different database names.
+
 ### Migration targets
 
-The initial schema migration and audit migration
-`1700000001000_admin_action_audits.js` were verified on **`nhatro_test`**.
-The audit migration has **not** been applied to development `nhatro` in these runs.
-Before using admin endpoints against development, review the migration and target
-`DATABASE_URL`, then run this yourself from `backend/`:
+Review the application and test project identities before applying migrations.
+From `backend/`, use the scripts that validate configuration and schema history:
 
 ```powershell
 npm.cmd run migrate
+npm.cmd run db:check
+npm.cmd run migrate:test
+npm.cmd run db:check:test
 ```
 
-This is a manual development setup instruction; the review did not execute it on
-`nhatro`. Do not run migration-down/reset/truncate against development. Integration
-tests migrate only the configured `nhatro_test` target; setup now refuses unsafe
-or aliased development/test database names before launching the migration CLI.
-Tests can reset **test data**, so never use a development database for fixtures.
+Migrations remain versioned in `backend/migrations/`; existing applied files must
+not be edited. The migration tooling checks schema/history before and after
+applying pending migrations, and handles PostGIS initialization. `db:check` is a
+read-only inspection of the selected database; it does not apply migrations.
 
-Start the API after configuring/migrating the intended development database:
+Jest and browser setup migrate only the validated Roomify-Test project and hold
+an advisory coordination lock. Missing identities, the same project for both
+environments, or a runtime/migration project mismatch fail before test work.
+Tests can reset **test data**; never point fixtures at Roomify or a project
+containing data that must be retained. Do not run integration/reset tests and
+E2E concurrently. Do not reset, truncate or run migration-down against Roomify.
+
+Start the API after configuring/migrating the intended application project:
 
 ```powershell
 npm.cmd run dev
 ```
 
-`GET /api/v1/health` checks that the HTTP app responds; PostgreSQL readiness is
-checked separately using `pg_isready` or the integration tests.
+`GET /api/v1/health` checks that the HTTP app responds. Use `npm.cmd run db:check`
+to inspect the application's Supabase connection, TLS, schema history and PostGIS.
 
 ## Auth and admin API
+
+The [landlord application flow](docs/analysis-and-design/landlord-access-requests.md)
+adds a tenant form at `/become-landlord` and administrator review at
+`/admin#landlord-requests`. New accounts remain tenants until admin approval.
+Granting landlord access through the legacy role endpoint also requires and
+approves a pending application. See the linked contract for the new endpoints.
 
 All paths below are relative to `/api/v1`. JSON payloads reject unsupported fields.
 
@@ -198,7 +222,8 @@ npm.cmd run build
 ```
 
 Playwright is the only new tooling dependency. E2E starts isolated servers on
-4310/5175 and refuses non-`nhatro_test` fixture targets; run it separately from the
+4310/5175 and refuses fixture targets outside the validated Roomify-Test project;
+run it separately from the
 backend integration suite. It cleans only its synthetic accounts, never resets
 development, and puts artifacts/profiles in the temporary directory. The latest
 integration checkpoint passed 19 Chromium headless cases, including actual browser-process close and
@@ -232,12 +257,12 @@ From `backend/`:
 
 ```powershell
 npx.cmd jest --config jest.unit.config.js --runInBand --silent
-npm.cmd test -- --silent --json --outputFile "$env:TEMP/roomify-t046-t049-final-results.json"
+npm.cmd test -- --testTimeout=30000 --silent --json --outputFile "$env:TEMP/roomify-t046-t049-final-results.json"
 npm.cmd run lint
 ```
 
 Run `git diff --check` at the repository root. Unit tests need no PostgreSQL;
-the full suite uses real PostgreSQL/PostGIS on `nhatro_test`. Test reports belong
+the full suite uses real Supabase PostgreSQL/PostGIS on Roomify-Test. Test reports belong
 in a temporary directory, not the commit. The latest verified results, findings,
 pending security sign-off and exact modified/untracked commit inventory are kept
 in the existing [quickstart integration record](src/specs/001-user-auth/quickstart.md#t025-t027-t031-t034-integration-handoff).
