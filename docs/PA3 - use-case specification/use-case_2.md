@@ -74,7 +74,7 @@ If at step 4 or 5 of the Basic Flow, the **LLM Service** fails to respond within
 
 ### 7. UI Prototype
 
-![UC-12 Get Listing Recommendations Prototype](./images/uc12-recommendations-prototype.png)  
+![UC-12 Get Listing Recommendations Prototype](./prototypes/uc12-recommendations-prototype.png)  
 *Figure UC-12: UI Prototype for Get Listing Recommendations*
 
 ---
@@ -147,7 +147,7 @@ If at any point before clicking **Submit for Approval**, the Landlord clicks the
 ### 5. Postconditions
 
 #### 5.1 Success Postcondition
-* A new boarding house listing is stored in the database with status **Pending**, complete with verified coordinates from **UC-14** and uploaded room images.
+* A new boarding house listing is stored in the database with status **Pending**, complete with verified coordinates from **UC-14** and uploaded room prototypes.
 
 #### 5.2 Failure Postcondition
 * No new listing record is created in the database.
@@ -157,7 +157,7 @@ If at any point before clicking **Submit for Approval**, the Landlord clicks the
 
 ### 7. UI Prototype
 
-![UC-13 Post Listing Prototype](./images/uc13-post-listing-prototype.png)  
+![UC-13 Post Listing Prototype](./prototypes/uc13-post-listing-prototype.png)  
 *Figure UC-13: UI Prototype for Post Listing*
 
 ---
@@ -226,7 +226,7 @@ If at any time before clicking **Confirm Location**, the Landlord clicks **Cance
 
 ### 7. UI Prototype
 
-![UC-14 Select Location on Map Prototype](./images/uc14-select-location-prototype.png)  
+![UC-14 Select Location on Map Prototype](./prototypes/uc14-select-location-prototype.png)  
 *Figure UC-14: UI Prototype for Select Location on Map*
 
 ---
@@ -290,7 +290,7 @@ If at step 5 of the Basic Flow, no listings owned by the Landlord match the sele
 
 ### 7. UI Prototype
 
-![UC-15 View My Listings Prototype](./images/uc15-my-listings-prototype.png)  
+![UC-15 View My Listings Prototype](./prototypes/uc15-my-listings-prototype.png)  
 *Figure UC-15: UI Prototype for View My Listings*
 
 ---
@@ -357,7 +357,7 @@ If at step 6 of the Basic Flow, the Landlord clicks **Save & Resubmit** without 
 
 ### 7. UI Prototype
 
-![UC-16 Edit Listing Prototype](./images/uc16-edit-listing-prototype.png)  
+![UC-16 Edit Listing Prototype](./prototypes/uc16-edit-listing-prototype.png)  
 *Figure UC-16: UI Prototype for Edit Listing*
 
 ---
@@ -417,7 +417,7 @@ If at step 4 of the Basic Flow, a database or network error prevents the deletio
 
 ### 7. UI Prototype
 
-![UC-17 Delete Listing Prototype](./images/uc17-delete-listing-prototype.png)  
+![UC-17 Delete Listing Prototype](./prototypes/uc17-delete-listing-prototype.png)  
 *Figure UC-17: UI Prototype for Delete Listing*
 
 ---
@@ -486,7 +486,7 @@ If at step 6 of the Basic Flow, the Admin selects another listing or navigates a
 
 ### 7. UI Prototype
 
-![UC-18 Review Pending Listings Prototype](./images/uc18-review-pending-listings-prototype.png)  
+![UC-18 Review Pending Listings Prototype](./prototypes/uc18-review-pending-listings-prototype.png)  
 *Figure UC-18: UI Prototype for Review Pending Listings*
 
 ---
@@ -551,7 +551,7 @@ If at step 5 of the Basic Flow, the system detects that the listing status is no
 
 ### 7. UI Prototype
 
-![UC-19 Approve Listing Prototype](./images/uc19-approve-listing-prototype.png)  
+![UC-19 Approve Listing Prototype](./prototypes/uc19-approve-listing-prototype.png)  
 *Figure UC-19: UI Prototype for Approve Listing*
 
 ---
@@ -612,7 +612,7 @@ If at step 3 of the Basic Flow, the Admin clicks **Cancel** or closes the modal:
 
 ### 7. UI Prototype
 
-![UC-20 Reject Listing Prototype](./images/uc20-reject-listing-prototype.png)  
+![UC-20 Reject Listing Prototype](./prototypes/uc20-reject-listing-prototype.png)  
 *Figure UC-20: UI Prototype for Reject Listing*
 
 ---
@@ -675,7 +675,7 @@ If at step 2 or 3 of the Basic Flow, the **Google Maps Platform** is unreachable
 
 ### 7. UI Prototype
 
-![UC-21 Retrieve Nearby Information Prototype](./images/uc21-retrieve-nearby-info-prototype.png)  
+![UC-21 Retrieve Nearby Information Prototype](./prototypes/uc21-retrieve-nearby-info-prototype.png)  
 *Figure UC-21: UI Prototype for Retrieve Nearby Information*
 
 ---
@@ -744,5 +744,7 @@ If at step 6 of the Basic Flow, the Admin clicks **Cancel** in the confirmation 
 
 ### 7. UI Prototype
 
-![UC-22 Manage User Accounts Prototype](./images/uc22-manage-users-prototype.png)  
+<<<<<<< HEAD
+![UC-22 Manage User Accounts Prototype](./prototypes/uc22-manage-users-prototype.png)
 *Figure UC-22: UI Prototype for Manage User Accounts*
+>>>>>>> origin/develop
