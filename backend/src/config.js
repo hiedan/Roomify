@@ -9,6 +9,6 @@ const testUrl =
 module.exports = {
   port: Number(process.env.PORT) || 3000,
   databaseUrl: isTest ? testUrl : devUrl,
-  jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-me',
+  jwtSecret: process.env.JWT_SECRET || 'roomify-dev-secret-key-32-bytes-long-123456',
   jwtExpiresIn: '7d',
 };
