@@ -5,7 +5,7 @@
 ### 1. Use-Case Name – UC-01: Register Account
 
 #### 1.1 Brief Description
-This use case allows a Guest to create a new account in the Roomify system to become a Registered User. The Guest can register using a standard Email/Password or via third-party social accounts (Google, Facebook). During this process, the user selects their primary role (Tenant or Landlord).
+This use case allows a Guest to create a new account in the Roomify system to become a Registered User. The Guest can register using a standard Email/Password or via third-party social accounts (Google, Facebook).
 
 ### 2. Flow of Events
 
@@ -13,7 +13,7 @@ This use case allows a Guest to create a new account in the Roomify system to be
 This use case begins when the Guest chooses to register a new account.
 
 1. The Guest clicks on the "Register" button.
-2. The system displays the registration form requesting: Full Name, Email, Password, Confirm Password, and Role selection.
+2. The system displays the registration form requesting: Full Name, Email, Password, and Confirm Password.
 3. The Guest enters valid information and clicks the "Đăng ký" (Submit) button.
 4. The system validates the input format (e.g., matching passwords, valid email format).
 5. The system verifies that the email does not already exist in the database.
@@ -25,12 +25,12 @@ This use case begins when the Guest chooses to register a new account.
 ##### 2.2.1 2a. Register with Google
 If at step 2 of the Basic Flow, the Guest clicks "Đăng ký bằng Google":
 1. The system redirects to the Google OAuth page. 
-2. Upon successful authentication, the system prompts the user to select their Role, creates the account, and logs them in. The use case ends.
+2. Upon successful authentication, the system creates the account and logs them in. The use case ends.
 
 ##### 2.2.2 2b. Register with Facebook
 If at step 2 of the Basic Flow, the Guest clicks "Đăng ký bằng Facebook":
 1. The system redirects to the Facebook OAuth page. 
-2. Upon successful authentication, the system prompts the user to select their Role, creates the account, and logs them in. The use case ends.
+2. Upon successful authentication, the system creates the account and logs them in. The use case ends.
 
 ##### 2.2.3 4a. Missing or Invalid Input
 If at step 4 of the Basic Flow, fields are blank or invalid:
@@ -50,27 +50,27 @@ If at step 5 of the Basic Flow, the email is already registered:
 ### 3. Special Requirements
 
 #### 3.1 Security Standard
-* User passwords must be securely hashed. OAuth flows must comply with Google and Facebook security standards.
+- User passwords must be securely hashed. OAuth flows must comply with Google and Facebook security standards.
 
 ### 4. Preconditions
 
 #### 4.1 Guest Status
-* The Guest has opened the Roomify web application and is not currently logged in.
+- The Guest has opened the Roomify web application and is not currently logged in.
 
 ### 5. Postconditions
 
 #### 5.1 Success Postcondition
-* A new user account (Tenant or Landlord) is successfully created.
+- A new user account is successfully created.
 
 #### 5.2 Failure Postcondition
-* No user account is created, and the database remains unchanged.
+- No user account is created, and the database remains unchanged.
 
 ### 6. Extension Points
-* None.
+- None.
 
 ### 7. UI Prototype
 
-![UC-01 Registration Form Prototype](images/uc01-register-prototype.png)  
+![UC-01 Registration Form Prototype](prototypes/uc01-register-prototype.jpg)  
 *Figure UC-01: UI Prototype for Register Account*
 
 ---
@@ -142,7 +142,7 @@ If at step 3 of the Basic Flow, the Guest leaves required fields blank:
 
 ### 7. UI Prototype
 
-![UC-02 Log In Form Prototype](images/uc02-login-prototype.png)  
+![UC-02 Log In Form Prototype](prototypes/uc02-login-prototype.png)  
 *Figure UC-02: UI Prototype for Log In*
 
 ---
@@ -203,7 +203,7 @@ If at step 4 of the Basic Flow, the email format is invalid:
 
 ### 7. UI Prototype
 
-![UC-03 Reset Password Prototype](images/uc03-reset-password-prototype.png)  
+![UC-03 Reset Password Prototype](prototypes/uc03-reset-password-prototype.png)  
 *Figure UC-03: UI Prototype for Reset Password*
 
 ---
@@ -258,7 +258,7 @@ If the user is inactive for a specified period:
 
 ### 7. UI Prototype
 
-![UC-04 Log Out Prototype](images/uc04-logout-prototype.png)  
+![UC-04 Log Out Prototype](prototypes/uc04-logout-prototype.png)  
 *Figure UC-04: UI Prototype for Log Out*
 
 ---
@@ -321,7 +321,7 @@ If at step 3 of the Basic Flow, the user clicks "Hủy" (Cancel):
 
 ### 7. UI Prototype
 
-![UC-05 Manage Profile Prototype](images/uc05-manage-profile-prototype.png)  
+![UC-05 Manage Profile Prototype](prototypes/uc05-manage-profile-prototype.png)  
 *Figure UC-05: UI Prototype for Manage Profile*
 
 ---
@@ -382,8 +382,8 @@ If at step 3 of the Basic Flow, the Guest clicks a "Xóa bộ lọc" (Clear Filt
 
 ### 7. UI Prototype
 
-![UC-06 Search Listings Prototype](images/uc06-search-listings-prototype_1.png)  
-![UC-06 Search Listings Prototype](images/uc06-search-listings-prototype_2.png)  
+![UC-06 Search Listings Prototype](prototypes/uc06-search-listings-prototype_1.png)  
+![UC-06 Search Listings Prototype](prototypes/uc06-search-listings-prototype_2.png)  
 *Figure UC-06: UI Prototype for Search Listings with Filters*
 
 ---
@@ -448,7 +448,7 @@ If at step 4 of the Basic Flow, the Guest applies filters via a floating filter 
 
 ### 7. UI Prototype
 
-![UC-07 View Listings on Map Prototype](images/uc07-view-map-prototype.png)  
+![UC-07 View Listings on Map Prototype](prototypes/uc07-view-map-prototype.png)  
 *Figure UC-07: UI Prototype for View Listings on Map*
 
 ---
@@ -503,8 +503,8 @@ If at step 2 of the Basic Flow, the listing has been deleted, hidden, or is no l
 
 ### 7. UI Prototype
 
-![UC-08 View Listing Details Prototype](images/uc08-view-listing-details-prototype_1.png)  
-![UC-08 View Listing Details Prototype](images/uc08-view-listing-details-prototype_2.png)  
+![UC-08 View Listing Details Prototype](prototypes/uc08-view-listing-details-prototype_1.png)  
+![UC-08 View Listing Details Prototype](prototypes/uc08-view-listing-details-prototype_2.png)  
 *Figure UC-08: UI Prototype for View Listing Details*
 
 ---
@@ -563,7 +563,7 @@ If at step 3 of the Basic Flow, the landlord has not provided a specific contact
 
 ### 7. UI Prototype
 
-![UC-09 View Landlord Contact Prototype](images/uc09-view-contact-prototype.png)  
+![UC-09 View Landlord Contact Prototype](prototypes/uc09-view-contact-prototype.png)  
 *Figure UC-09: UI Prototype for View Landlord Contact Information*
 
 ---
@@ -623,7 +623,7 @@ If at step 6 of the Basic Flow, the Tenant has not saved any listings:
 
 ### 7. UI Prototype
 
-![UC-10 Manage Favorite Listings Prototype](images/uc10-favorite-listings-prototype.png)  
+![UC-10 Manage Favorite Listings Prototype](prototypes/uc10-favorite-listings-prototype.png)  
 *Figure UC-10: UI Prototype for Manage Favorite Listings*
 
 ---
@@ -687,5 +687,5 @@ If at step 3 of the Basic Flow, the Guest attempts to send an empty message:
 
 ### 7. UI Prototype
 
-![UC-11 Chat with AI Assistant Prototype](images/uc11-ai-chat-prototype.png)  
+![UC-11 Chat with AI Assistant Prototype](prototypes/uc11-ai-chat-prototype.png)  
 *Figure UC-11: UI Prototype for Chat with AI Assistant*
