@@ -225,6 +225,16 @@ button, input {
   text-transform: capitalize;
 }
 
+.role-badge.landlord {
+  background: #e8f7ea;
+  color: #1f7d48;
+}
+
+.role-badge.admin {
+  background: #fbe9ef;
+  color: #a62b52;
+}
+
 .user-card {
   background: #f3f7ff;
   border-radius: 18px;
@@ -237,7 +247,87 @@ button, input {
   overflow-wrap: anywhere;
 }
 
-.session-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.role-panel {
+  margin-top: 22px;
+  border: 1px solid #d9e9ff;
+  background: linear-gradient(180deg, #f7fbff 0%, #edf5ff 100%);
+  border-radius: 18px;
+  padding: 18px 20px;
+}
+
+.role-panel h2 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  color: #18385d;
+}
+
+.role-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #23476f;
+  display: grid;
+  gap: 8px;
+}
+
+.quick-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.quick-link,
+.secondary-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border: 1px solid #c9d8f0;
+  background: #edf3ff;
+  color: #1d3d67;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.secondary-button {
+  border: 1px solid #c9d8f0;
+  background: #edf3ff;
+  color: #1d3d67;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-dashboard .admin-form {
+  margin-top: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.select-input {
+  width: 100%;
+  border: 1px solid rgba(13, 35, 64, 0.16);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
 button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #1457a9; outline-offset: 3px; }
 button:disabled { cursor: not-allowed; opacity: 0.65; }
 
@@ -248,6 +338,11 @@ button:disabled { cursor: not-allowed; opacity: 0.65; }
   font-weight: 600;
   background: #e6fff2;
   color: #1a5e42;
+}
+
+.error-message {
+  background: #ffe6ea;
+  color: #8b1e36;
 }
 
 .error-message {
