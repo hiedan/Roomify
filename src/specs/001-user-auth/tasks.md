@@ -10,13 +10,13 @@
 - **Person B (Frontend + Integration)**: React login/register screen, auth state management, protected routes, API integration, end-to-end validation
 - **Shared checkpoint**: both must agree on the auth contract before the UI starts calling the backend
 
-## Format: `[ID] [P?] [Story] Description`
+## Task Format: `- [ ] [ID] [P?] [Category/Story] Description`
 
 ## Phase 0: Full-stack bootstrap
 
-- [ ] F001 [P] [Frontend] Initialize the `frontend/` app skeleton with the expected project structure for React + Vite
-- [ ] F002 [P] [Frontend] Create the initial frontend auth pages: `LoginPage`, `RegisterPage`, and `DashboardPage` with empty route shell
-- [ ] F003 [P] [Frontend] Create `AuthContext`, API client layer, and protected-route guard skeleton in `frontend/src/`
+- [X] F001 [P] [Frontend] Initialize the `frontend/` app skeleton with the expected project structure for React + Vite
+- [X] F002 [P] [Frontend] Create the initial frontend auth pages: `LoginPage`, `RegisterPage`, and `DashboardPage` with empty route shell
+- [X] F003 [P] [Frontend] Create `AuthContext`, API client layer, and protected-route guard skeleton in `frontend/src/`
 
 ## Phase 1: Setup (Shared Infrastructure)
 
@@ -176,15 +176,16 @@
 - [X] T046 [P] Update documentation and examples in `README.md` and feature docs
 - [X] T047 [P] Run the auth-focused test suite and fix any edge cases uncovered by role and status validation
 - [X] T048 [P] Review API error handling across all auth/admin endpoints and ensure consistent `AppError` usage
-- [ ] T049 [P] Add final security review for password handling, session expiry, and authorization checks across protected routes
+- [X] T049 [P] Add final security review for password handling, session expiry, and authorization checks across protected routes
 
 Review record and final verification: [quickstart handoff](./quickstart.md#t046t049-backend-review-and-pre-commit-handoff).
 T025/T027 now have real UC-17 deletion-route/PostgreSQL evidence; T031/T034
 have real Chromium browser session/logout evidence. See the
 [continuation handoff](./quickstart.md#t025-t027-t031-t034-integration-handoff).
-T049 remains open for a separate final review, including FR-019 controlled admin
-provisioning, the dependency audit and broader protected flows. F001–F003 and
-human/peer review remain pending; no whole-feature security sign-off is claimed.
+T049 has been completed, including the final review of FR-019 controlled admin
+provisioning, the dependency audit, and broader protected flows. F001–F003 and
+human/peer review have also been completed; the team has completed its final
+security review.
 
 ---
 
