@@ -20,7 +20,10 @@ Returns the filter choices available for public approved listings.
   "data": {
     "districts": ["Bình Thạnh", "Thủ Đức"],
     "roomTypes": [
-      { "code": "team-agreed-code", "name": "Team-agreed label" }
+      { "code": "private_room", "name": "Phòng trọ riêng" },
+      { "code": "shared_room", "name": "Phòng ở ghép" },
+      { "code": "studio", "name": "Studio / căn hộ mini" },
+      { "code": "apartment", "name": "Căn hộ chung cư" }
     ],
     "amenities": [
       { "id": "1", "name": "Wifi" }
@@ -29,7 +32,7 @@ Returns the filter choices available for public approved listings.
 }
 ```
 
-Districts are distinct values from approved listings, sorted by display name. Room types are active catalog entries. Amenities are supported amenity entries used by approved listings. The example room-type value is illustrative only and must not be seeded as a real category.
+Districts are distinct values from approved listings, sorted by display name. Room types are active catalog entries. Amenities are supported amenity entries used by approved listings. The room-type values above are the confirmed initial catalog; do not add a whole-house category in this version.
 
 ## `GET /listings`
 
@@ -63,7 +66,7 @@ Unknown query parameters, malformed values, unsupported filter values, and `minA
       "areaM2": 24,
       "address": "Example street",
       "district": "Bình Thạnh",
-      "roomType": { "code": "team-agreed-code", "name": "Team-agreed label" },
+      "roomType": { "code": "private_room", "name": "Phòng trọ riêng" },
       "coverImageUrl": null,
       "amenities": [{ "id": "1", "name": "Wifi" }],
       "createdAt": "2026-11-12T10:00:00.000Z"
@@ -73,7 +76,7 @@ Unknown query parameters, malformed values, unsupported filter values, and `minA
 }
 ```
 
-The example values are illustrative. Return only explicitly selected public fields, with no owner or account details. Results are ordered by `created_at DESC, id DESC`. An empty match is `200` with an empty `data` array and `pagination.total` equal to zero.
+Other example values are illustrative. `roomType` is null only for an existing listing that cannot be reliably classified; its card displays “Chưa phân loại”, and it is excluded whenever a room-type filter is selected. Return only explicitly selected public fields, with no owner or account details. Results are ordered by `created_at DESC, id DESC`. An empty match is `200` with an empty `data` array and `pagination.total` equal to zero.
 
 ## `GET /listings/{id}`
 

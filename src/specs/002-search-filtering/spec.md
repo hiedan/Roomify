@@ -154,17 +154,18 @@ As a visitor or tenant, I want to browse result pages and understand the key fac
 - Searchable text comprises listing title, street/address, and district. District, room type, maximum monthly price, room area, and the amenities associated with listings are available as filter criteria.
 - When several filter categories are combined, all selected categories must match. When multiple amenities are selected, a result must have every selected amenity.
 - The maximum monthly price and room-area bounds are inclusive. Price is entered and displayed in VND per month; area is entered and displayed in square meters.
-- The property-type filter uses the set of room types agreed for listing creation; the same values must be available to search as filter choices.
+- The room-type filter uses the following shared catalog for listing creation and search: `private_room` (Phòng trọ riêng), `shared_room` (Phòng ở ghép), `studio` (Studio / căn hộ mini), and `apartment` (Căn hộ chung cư). A whole-house category is outside this feature's current scope.
+- Existing listings whose room type cannot be determined from stored data remain unclassified; the system MUST NOT guess a category. Their public room-type value is null and their card displays “Chưa phân loại”. Selecting a room type excludes unclassified listings.
 - Results show 12 listings per page, sorted by creation time from newest to oldest and then by listing identifier from highest to lowest.
 - Search results use the application's existing listing summary and detail experience. Search does not define a new listing-detail workflow.
-- The response-time and usability thresholds in the success criteria are proposed acceptance targets and will be checked against the documented team test data and environment.
+- The response-time and usability thresholds in the success criteria are the team's accepted targets for this feature. Verification uses the synthetic data and procedures documented in `quickstart.md`.
 - Đặng Hiển and Nguyễn Hữu Nghĩa will agree on the listing data contract and API responsibilities during planning. This specification defines user-visible behavior and does not prescribe a programming language, framework, endpoint, or database design.
 
-## Decisions to Confirm
+## Confirmed Decisions (2026-11-16)
 
 **Performed by:** Nguyễn Hữu Nghĩa | **Reviewed by:** Đỗ Quốc Đại | **Edited by:** Nguyễn Hữu Nghĩa
 
-Confirm the remaining items with Đặng Hiển before finalizing the implementation plan. Record the agreed decisions here and update any affected requirements or acceptance scenarios.
+These decisions establish the initial implementation contract. Share the room-type catalog with the listing-creation owner so that future listing entry uses the same codes.
 
-- **Room-type choices and listing contract**: The use case requires a property-type filter, but the currently inspected database migration has no room-type field. Confirm the room-type choices with listing creation and ensure storing and exposing the selected type is included in the feature plan.
-- **Proposed success targets**: Confirm or revise the 3-second response target, 1,000-listing test dataset, usability-test sample, and viewport widths in the success criteria.
+- **Room types**: Use `private_room` (Phòng trọ riêng), `shared_room` (Phòng ở ghép), `studio` (Studio / căn hộ mini), and `apartment` (Căn hộ chung cư). Do not include whole-house listings in this version. Existing rows without reliable type information remain null/unclassified rather than receiving an invented category.
+- **Acceptance targets**: Keep SC-003 through SC-006 as written: at least 95% of searches within 3 seconds against 1,000 prepared approved listings; at least 9 of 10 usability participants complete the search in two minutes; distinguish invalid/empty/failure states; and support keyboard use at 320 CSS-pixel and 1280 CSS-pixel viewport widths without horizontal page scrolling.

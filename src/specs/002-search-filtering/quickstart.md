@@ -14,7 +14,7 @@
 - Backend and frontend dependencies installed in their respective directories.
 - A configured Roomify application PostgreSQL project and a separate, explicitly configured Roomify-Test PostgreSQL project, following the root [database setup instructions](../../../README.md).
 - Synthetic test records only. Do not use the test project for data that must be preserved.
-- The listing-creation owner has agreed on the room-type codes/labels and an existing-record mapping before applying the room-type migration.
+- Use the confirmed room-type codes from [spec.md](./spec.md). Keep existing rows with no reliable type unclassified; do not invent a backfill.
 
 Keep database URLs and credentials in the local backend environment configuration; never put secrets in frontend variables, source files, or this guide.
 
@@ -29,7 +29,11 @@ npm.cmd run migrate:test
 npm.cmd run db:check:test
 ```
 
-Run these only after verifying that application and test URLs point to different intended projects. The migration must not assign an unconfirmed room type to existing listings.
+Run these only after verifying that application and test URLs point to different intended projects. The migration must seed only the four confirmed room types and leave unclassifiable legacy listings null.
+
+### T005 execution status
+
+On 2026-11-16, the read-only `npm.cmd run db:check:test` preflight confirmed the configured Roomify-Test project is separate from the application project. `npm.cmd run migrate:test` applied migration `1700000004000_search_room_types`, and the subsequent `npm.cmd run db:check:test` completed successfully, validating the resulting schema history. No application-database migration was run. Keep database URLs and credentials private.
 
 ## Verify the Backend
 
@@ -60,4 +64,8 @@ Verify a visitor can open search without signing in, use keyboard-accessible fil
 
 ## Verify the Performance Target
 
-Prepare 1,000 synthetic approved listings with varied districts, room types, prices, areas, images, and amenities in the isolated verification environment. Measure end-to-end search response/display time across a documented set of valid queries. Report the environment and observed percentile; the target is at least 95% of searches showing the first page within 3 seconds. Do not treat unit tests or mocked API responses as database performance evidence.
+Prepare 1,000 synthetic approved listings with varied districts, confirmed room types, prices, areas, images, and amenities in the isolated verification environment. Include pending and rejected control records to verify they never appear. Measure end-to-end time from submitting a valid search until the first result page is displayed for 100 documented queries; report the environment and observed percentile. The target is at least 95% of searches within 3 seconds.
+
+For usability, recruit 10 participants who have not implemented this feature. Give each the same task: “Find a room in Bình Thạnh, type Studio / căn hộ mini, at or below 5,000,000 VND/month, at least 20 m², and with Wi-Fi.” At least 9 of 10 must find a matching approved listing within 2 minutes without assistance. Record completion count/time and participant feedback using synthetic listings only.
+
+Verify keyboard-only operation and absence of horizontal page scrolling at viewport widths of 320 CSS pixels and 1280 CSS pixels. Record browser, viewport dimensions, test environment, and results. Do not treat unit tests or mocked API responses as database performance evidence.

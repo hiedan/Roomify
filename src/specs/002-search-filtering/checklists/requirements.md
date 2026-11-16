@@ -33,5 +33,5 @@
 
 ## Notes
 
-- The current database migration does not include a room-type field. Include the room-type data and listing-creation contract in implementation planning, and agree on the available room-type choices before implementation.
-- The response-time and usability thresholds are proposed acceptance targets until the team confirms them.
+- The current database migration does not include a room-type field. The initial catalog is now defined as `private_room`, `shared_room`, `studio`, and `apartment`; add it through a versioned migration, leave unclassifiable legacy listings null, and share the same codes with listing creation.
+- SC-003 through SC-006 are the accepted baseline targets. Verify them using the synthetic dataset, 100-query performance procedure, 10-participant usability task, and viewport/keyboard checks in [quickstart.md](../quickstart.md).

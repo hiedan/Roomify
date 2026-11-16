@@ -1,5 +1,23 @@
 const listings = require('../services/listingService');
-const { sendSuccess } = require('../utils/response');
+const listingSearch = require('../services/listingSearchService');
+const { sendPaginated, sendSuccess } = require('../utils/response');
+
+async function filters(_req, res, next) {
+  try {
+    return sendSuccess(res, await listingSearch.getListingFilterOptions());
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function search(req, res, next) {
+  try {
+    const result = await listingSearch.searchListings(req.query);
+    return sendPaginated(res, result.listings, result.pagination);
+  } catch (err) {
+    return next(err);
+  }
+}
 
 async function remove(req, res, next) {
   try {
@@ -9,4 +27,4 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { remove };
+module.exports = { filters, search, remove };
