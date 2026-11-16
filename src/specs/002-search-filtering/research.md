@@ -41,13 +41,13 @@ The existing frontend `apiRequest` helper returns only the response `data` prope
 
 ## Decision 4: Add a shared room-type catalog through a versioned migration
 
-**Decision**: Introduce a database-backed room-type catalog referenced by listings. Return active room types from the filter-options endpoint; validate selected types against that catalog. Final codes/labels and existing-row mapping are an implementation gate requiring agreement with the listing-creation owner.
+**Decision**: Introduce a database-backed room-type catalog referenced by listings with the confirmed values `private_room` (Phòng trọ riêng), `shared_room` (Phòng ở ghép), `studio` (Studio / căn hộ mini), and `apartment` (Căn hộ chung cư). Return active room types from the filter-options endpoint and validate selected types against that catalog. Existing rows without a reliable type remain null/unclassified; do not infer a backfill.
 
 **Rationale**: The initial migration has no room-type field, and the frontend and backend must use the same available choices. A single catalog avoids duplicated, drifting UI and API value lists.
 
 **Alternatives considered**:
 - Independently hardcoding room-type strings in the client and server: rejected because the lists can diverge.
-- Guessing a category list or assigning an arbitrary type to existing records: rejected because no canonical values or accurate backfill mapping are documented.
+- Assigning an arbitrary type to existing records: rejected because the current database has no source for a reliable mapping.
 
 ## Decision 5: Keep filter choices and public result data aligned with approved listings
 
@@ -79,7 +79,6 @@ The existing frontend `apiRequest` helper returns only the response `data` prope
 - `frontend/package.json` and `frontend/playwright.config.js` provide Vite, React Router, and Playwright.
 - `src/specs/001-user-auth/quickstart.md` documents the current Supabase PostgreSQL test-database safety requirements.
 
-## Remaining Team Decisions
+## Confirmed Acceptance Targets
 
-- The canonical room-type codes and labels, plus a correct mapping for existing listings, must be agreed with the listing-creation owner before implementation. This plan intentionally does not invent or seed categories.
-- The proposed performance and usability targets remain acceptance proposals until confirmed by the team.
+The feature owner retained the existing success targets as the baseline for verification: 95% of searches in 3 seconds against 1,000 synthetic approved listings; 9 of 10 participants complete the specified search in two minutes; and keyboard usability at 320 CSS-pixel and 1280 CSS-pixel viewport widths. See [quickstart.md](./quickstart.md) for the verification procedure.

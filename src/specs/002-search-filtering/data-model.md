@@ -15,7 +15,8 @@ erDiagram
     LISTINGS ||--o{ LISTING_AMENITIES : includes
     AMENITIES ||--o{ LISTING_AMENITIES : identifies
     ROOM_TYPES {
-        string code PK
+        integer id PK
+        string code UK
         string name
         boolean is_active
     }
@@ -27,7 +28,7 @@ erDiagram
         string address
         string district
         string status
-        string room_type_code FK
+        integer room_type_id FK "nullable for unclassified legacy listings"
         timestamptz created_at
     }
     LISTING_IMAGES {
@@ -64,7 +65,7 @@ Existing persistent entity in `listings`; public search adds a room-type relatio
 | `district` | Existing `varchar(100)` | Public location and keyword-search field; exact district filter. |
 | `status` | Existing status | Only `approved` rows can be returned publicly. |
 | `created_at` | Existing timestamp | Sort descending, followed by `id` descending. |
-| room type reference | New migration | Must reference an active, team-approved catalog value. Existing-row mapping must be defined before making the reference mandatory. |
+| `room_type_id` | New nullable integer FK | References `room_types.id` for classified listings. Existing rows whose type cannot be determined reliably remain null; never assign an inferred category. |
 
 The API must not expose `owner_id`, `reviewed_by`, rejection metadata, user records, or other private fields.
 
@@ -74,11 +75,12 @@ New lookup entity shared by listing entry and public search.
 
 | Field | Type | Rules |
 |---|---|---|
-| `code` | String primary key | Stable canonical value agreed with listing creation. |
-| `name` | String | User-visible label; unique in the catalog. |
+| `id` | Integer primary key | Internal relational key referenced by listings. |
+| `code` | Unique string | One of `private_room`, `shared_room`, `studio`, or `apartment`; stable value shared with listing creation and exposed by the API. |
+| `name` | String | User-visible label: “Phòng trọ riêng”, “Phòng ở ghép”, “Studio / căn hộ mini”, or “Căn hộ chung cư”; unique in the catalog. |
 | `is_active` | Boolean | Inactive values cannot be selected for new searches or new listing entry; historical approved listings retain their association. |
 
-The supported `code`/`name` set is not specified in the repository. Do not create the final seed data or map existing listing rows until feature owners agree on the catalog and backfill.
+These initial catalog values are the feature owner's decision dated 2026-11-16. Share the same codes with the listing-creation owner. Whole-house listings are not in scope. Existing rows that cannot be classified from reliable data remain null and are presented as “Chưa phân loại”; a room-type filter does not include them.
 
 ### Amenity and ListingAmenity
 
@@ -116,6 +118,6 @@ The paginated response contains the result array plus `page`, fixed `limit` (`12
 ## Migration and Integrity Notes
 
 1. Add the room-type catalog and listing association in a new versioned migration; do not edit the applied initial migration.
-2. Agree on canonical values and map any existing listing rows before enforcing a non-null relationship. A migration must fail visibly rather than assign an inaccurate category.
+2. Seed exactly the four confirmed catalog values. Keep legacy listing references nullable when no reliable mapping exists; do not assign an inaccurate category or make the column non-null until listing creation guarantees a valid type for new rows.
 3. Preserve current listing moderation semantics. Room availability is not modeled by the existing schema and is not introduced by this feature.
 4. Reuse existing price/area and amenity integrity rules. Validate public query input at the API boundary and still bind all values in SQL.
