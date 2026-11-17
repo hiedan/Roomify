@@ -19,6 +19,14 @@ async function search(req, res, next) {
   }
 }
 
+async function detail(req, res, next) {
+  try {
+    return sendSuccess(res, await listingSearch.getApprovedListingById(req.params.id));
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function remove(req, res, next) {
   try {
     return sendSuccess(res, await listings.deleteOwnedListing(req.user.id, req.params.id, req.body));
@@ -27,4 +35,4 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { filters, search, remove };
+module.exports = { filters, search, detail, remove };

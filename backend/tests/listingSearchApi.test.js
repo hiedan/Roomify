@@ -1,6 +1,7 @@
 jest.mock('../src/services/listingSearchService', () => ({
   getListingFilterOptions: jest.fn(),
   searchListings: jest.fn(),
+  getApprovedListingById: jest.fn(),
 }));
 
 const request = require('supertest');
@@ -58,5 +59,52 @@ test('public search service errors are forwarded to the standard error handler',
   expect(response.body).toEqual({
     success: false,
     error: { code: 'VALIDATION_ERROR', message: 'page: Invalid value' },
+  });
+});
+
+test('unexpected search service failures use the standard internal error response', async () => {
+  listingSearch.searchListings.mockRejectedValue(new Error('Synthetic database failure'));
+  const errorLog = jest.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    const response = await api.get('/api/v1/listings').query({ keyword: 'room' });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: 'INTERNAL', message: 'Internal server error' },
+    });
+    expect(JSON.stringify(response.body)).not.toContain('Synthetic database failure');
+    expect(errorLog).toHaveBeenCalledWith('Unexpected server error');
+  } finally {
+    errorLog.mockRestore();
+  }
+});
+
+test('public listing detail route returns the service result in the standard success envelope', async () => {
+  const detail = {
+    id: '123',
+    title: 'Synthetic approved listing',
+    description: 'Public detail description',
+    images: [{ url: 'https://example.test/image.jpg', isCover: true }],
+    amenities: [],
+  };
+  listingSearch.getApprovedListingById.mockResolvedValue(detail);
+
+  const response = await api.get('/api/v1/listings/123');
+
+  expect(response.status).toBe(200);
+  expect(response.body).toEqual({ success: true, data: detail });
+  expect(listingSearch.getApprovedListingById).toHaveBeenCalledWith('123');
+});
+
+test('public listing detail route forwards not-found service errors', async () => {
+  listingSearch.getApprovedListingById.mockRejectedValue(new AppError(404, 'NOT_FOUND', 'Listing not found'));
+
+  const response = await api.get('/api/v1/listings/123');
+
+  expect(response.status).toBe(404);
+  expect(response.body).toEqual({
+    success: false,
+    error: { code: 'NOT_FOUND', message: 'Listing not found' },
   });
 });
