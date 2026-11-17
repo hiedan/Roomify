@@ -82,6 +82,65 @@ test('district filtering validates an exact approved district and applies it to 
   expect(result.pagination).toEqual({ page: 1, limit: 12, total: 1 });
 });
 
+test('combines active room type, inclusive price and area bounds, and every distinct selected amenity', async () => {
+  query.mockResolvedValueOnce({ rows: [{ id: 3 }] })
+    .mockResolvedValueOnce({ rows: [{ id: 1 }, { id: 2 }] })
+    .mockResolvedValueOnce({ rows: [{ total: '1' }] })
+    .mockResolvedValueOnce({ rows: [listingRow()] });
+
+  const result = await searchListings({
+    roomType: 'studio',
+    maxPrice: '5000000',
+    minAreaM2: '20',
+    maxAreaM2: '24',
+    amenityIds: ['2', '1', '2'],
+  });
+
+  expect(query).toHaveBeenCalledTimes(4);
+  expect(query.mock.calls[0][0]).toContain('is_active = true');
+  expect(query.mock.calls[0][1]).toEqual(['studio']);
+  expect(query.mock.calls[1][1]).toEqual([[2, 1]]);
+
+  const [countSql, countParams] = query.mock.calls[2];
+  const [resultsSql, resultsParams] = query.mock.calls[3];
+  for (const sql of [countSql, resultsSql]) {
+    expect(sql).toContain('rt.code = $1');
+    expect(sql).toContain('l.price <= $2');
+    expect(sql).toContain('l.area_m2 >= $3');
+    expect(sql).toContain('l.area_m2 <= $4');
+    expect(sql).toContain('COUNT(DISTINCT la.amenity_id)');
+    expect(sql).toContain('l.status = \'approved\'');
+  }
+  expect(countParams).toEqual(['studio', 5000000, 20, 24, [2, 1], 2]);
+  expect(resultsParams).toEqual(['studio', 5000000, 20, 24, [2, 1], 2, 12, 0]);
+  expect(result.pagination.total).toBe(1);
+});
+
+test('rejects inactive or unsupported room types and amenities instead of ignoring them', async () => {
+  query.mockResolvedValueOnce({ rows: [] });
+  await expect(searchListings({ roomType: 'whole_house' })).rejects.toMatchObject({
+    status: 400,
+    code: 'VALIDATION_ERROR',
+  });
+  expect(query).toHaveBeenCalledTimes(1);
+
+  query.mockReset();
+  query.mockResolvedValueOnce({ rows: [] });
+  await expect(searchListings({ amenityIds: '999' })).rejects.toMatchObject({
+    status: 400,
+    code: 'VALIDATION_ERROR',
+  });
+  expect(query).toHaveBeenCalledTimes(1);
+});
+
+test('rejects an area range whose minimum exceeds its maximum before querying', async () => {
+  await expect(searchListings({ minAreaM2: '25', maxAreaM2: '24' })).rejects.toMatchObject({
+    name: 'ZodError',
+    issues: [expect.objectContaining({ message: 'Minimum area must not exceed maximum area' })],
+  });
+  expect(query).not.toHaveBeenCalled();
+});
+
 test('unfiltered search returns the first 12 records and the total matching count', async () => {
   const rows = Array.from({ length: 12 }, (_, index) => listingRow({ id: String(index + 1) }));
   query.mockResolvedValueOnce({ rows: [{ total: '17' }] }).mockResolvedValueOnce({ rows });
@@ -108,14 +167,24 @@ test.each([
   [{ page: '1.5' }],
   [{ page: '1', extra: 'unsupported' }],
   [{ keyword: 123 }],
+  [{ maxPrice: 'not-a-number' }],
+  [{ minAreaM2: '0' }],
+  [{ maxAreaM2: 'Infinity' }],
+  [{ amenityIds: ['1', 'invalid'] }],
 ])('rejects malformed or unsupported search parameters before querying', async criteria => {
   await expect(searchListings(criteria)).rejects.toBeInstanceOf(Error);
   expect(query).not.toHaveBeenCalled();
 });
 
-test('preserves the original database error rather than returning an empty search result', async () => {
+test.each([0, 1])('preserves database errors from search query %i instead of returning empty results', async failureIndex => {
   const databaseError = new Error('Synthetic database failure');
-  query.mockRejectedValueOnce(databaseError);
+  if (failureIndex === 0) {
+    query.mockRejectedValueOnce(databaseError);
+  } else {
+    query.mockResolvedValueOnce({ rows: [{ total: '0' }] })
+      .mockRejectedValueOnce(databaseError);
+  }
 
   await expect(searchListings({})).rejects.toBe(databaseError);
+  expect(query).toHaveBeenCalledTimes(failureIndex + 1);
 });

@@ -86,6 +86,8 @@ Returns a public detail projection only when the listing exists and is administr
 - `400 VALIDATION_ERROR`: malformed identifier.
 - `404 NOT_FOUND`: missing or non-approved listing; pending and rejected records are indistinguishable from missing records.
 
+The detail `data` object contains the summary fields shown above plus `description` and `images`. Each image contains only `url` and `isCover`, ordered by `sort_order ASC, id ASC`. The `amenities` array uses the same `{ "id", "name" }` projection as search summaries.
+
 ## Query and Result Semantics
 
 - All search categories combine with AND semantics; keyword text can match any of title, address, or district.

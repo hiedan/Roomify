@@ -73,14 +73,14 @@ Each task starts with a checkbox and sequential task ID, uses `[P]` only when pa
 
 ### Backend tests and implementation — Owner: Nguyễn Hữu Nghĩa
 
-- [ ] T012 [P] [US2] Extend unit tests for active room-type validation, inclusive maximum price/area bounds, all-selected-amenities matching, AND combination semantics, and unsupported values in `backend/tests/listingSearchService.test.js` (Owner: Nguyễn Hữu Nghĩa; depends on Phase 2).
-- [ ] T013 [P] [US2] Add API integration tests for filter options and combined room-type/price/area/amenity filters in `backend/tests/listingSearchApi.integration.test.js` (Owner: Nguyễn Hữu Nghĩa; depends on Phase 2).
-- [ ] T014 [US2] Extend filter-options retrieval with active room types and available amenities, implement all advanced filter predicates in `backend/src/services/listingSearchService.js`, and update the existing filters handler in `backend/src/controllers/listingController.js` and `backend/src/routes/listingRoutes.js` to return only contract-defined public fields (Owner: Nguyễn Hữu Nghĩa; depends on T012, T013, and Phase 2).
+- [x] T012 [P] [US2] Extend unit tests for active room-type validation, inclusive maximum price/area bounds, all-selected-amenities matching, AND combination semantics, and unsupported values in `backend/tests/listingSearchService.test.js` (Owner: Nguyễn Hữu Nghĩa; verified by unit tests).
+- [x] T013 [P] [US2] Add API integration tests for filter options and combined room-type/price/area/amenity filters in `backend/tests/listingSearchApi.integration.test.js` (Owner: Nguyễn Hữu Nghĩa; 6 integration tests pass against Roomify-Test).
+- [x] T014 [US2] Extend filter-options retrieval with active room types and available amenities, implement all advanced filter predicates in `backend/src/services/listingSearchService.js`, and ensure the existing filters/search handlers in `backend/src/controllers/listingController.js` and `backend/src/routes/listingRoutes.js` return only contract-defined public fields (Owner: Nguyễn Hữu Nghĩa; the existing controller/routes already provided the required public envelopes; advanced filters verified by unit and integration tests).
 
 ### Frontend tests and implementation — Owner: Đặng Hiển
 
-- [ ] T015 [P] [US2] Extend browser tests for combined filters, filter options, all-required amenity behavior, and preservation of criteria on submission in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển; depends on the agreed values from T001).
-- [ ] T016 [US2] Add room-type, maximum-price, minimum/maximum-area, and multi-amenity controls to `frontend/src/pages/SearchPage.jsx`; load options and serialize filters according to `frontend/src/api/listingApi.js` and `contracts/search-api.md` (Owner: Đặng Hiển; depends on T015 and API contract).
+- [x] T015 [P] [US2] Extend browser tests for combined filters, filter options, all-required amenity behavior, and preservation of criteria on submission in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển; the browser test verifies anonymous filter usage, repeated amenity query parameters, and retained form values).
+- [x] T016 [US2] Add room-type, maximum-price, minimum/maximum-area, and multi-amenity controls to `frontend/src/pages/SearchPage.jsx`; load options and serialize filters according to `frontend/src/api/listingApi.js` and `contracts/search-api.md` (Owner: Đặng Hiển; production build and complete Playwright suite pass).
 
 **Checkpoint**: Every selected filter category is applied by the server, and combined searches match the exact expected set.
 
@@ -92,8 +92,8 @@ Each task starts with a checkbox and sequential task ID, uses `[P]` only when pa
 
 ### Backend tests and implementation — Owner: Nguyễn Hữu Nghĩa
 
-- [ ] T017 [P] [US3] Add API/service tests for minimum area greater than maximum, malformed and unsupported filters, and database/service errors returning the standard error shape in `backend/tests/listingSearchService.test.js` and `backend/tests/listingSearchApi.integration.test.js` (Owner: Nguyễn Hữu Nghĩa).
-- [ ] T018 [US3] Enforce strict query validation and reject unknown or unsupported criteria without silently broadening results in `backend/src/services/listingSearchService.js`; propagate failures through existing `backend/src/middlewares/errorHandler.js` behavior (Owner: Nguyễn Hữu Nghĩa; depends on T017).
+- [x] T017 [P] [US3] Add API/service tests for minimum area greater than maximum, malformed and unsupported filters, and database/service errors returning the standard error shape in `backend/tests/listingSearchService.test.js` and `backend/tests/listingSearchApi.integration.test.js` (Owner: Nguyễn Hữu Nghĩa; unit/API error tests pass and all 12 integration cases pass against Roomify-Test).
+- [x] T018 [US3] Enforce strict query validation and reject unknown or unsupported criteria without silently broadening results in `backend/src/services/listingSearchService.js`; propagate failures through existing `backend/src/middlewares/errorHandler.js` behavior (Owner: Nguyễn Hữu Nghĩa; strict Zod validation and supported-value checks already existed from T014; confirmed by malformed/unsupported criteria and standard 400/500 error-envelope tests).
 
 ### Frontend tests and implementation — Owner: Đặng Hiển
 
@@ -110,8 +110,8 @@ Each task starts with a checkbox and sequential task ID, uses `[P]` only when pa
 
 ### Backend tests and implementation — Owner: Nguyễn Hữu Nghĩa
 
-- [ ] T021 [P] [US4] Add integration tests for 12-item pagination, total count, deterministic `created_at DESC, id DESC` ordering, public result projection, approved detail lookup, and 404 for pending/rejected listings in `backend/tests/listingSearchApi.integration.test.js` (Owner: Nguyễn Hữu Nghĩa).
-- [ ] T022 [US4] Implement result pagination and approved listing detail reads in `backend/src/services/listingSearchService.js`, `backend/src/controllers/listingController.js`, and `backend/src/routes/listingRoutes.js`; return exactly 12 items per page and exclude owner/account and moderation-private fields (Owner: Nguyễn Hữu Nghĩa; depends on T021).
+- [x] T021 [P] [US4] Add integration tests for 12-item pagination, total count, deterministic `created_at DESC, id DESC` ordering, public result projection, approved detail lookup, and 404 for pending/rejected listings in `backend/tests/listingSearchApi.integration.test.js` (Owner: Nguyễn Hữu Nghĩa; all 14 search integration cases pass against Roomify-Test).
+- [x] T022 [US4] Implement result pagination and approved listing detail reads in `backend/src/services/listingSearchService.js`, `backend/src/controllers/listingController.js`, and `backend/src/routes/listingRoutes.js`; return exactly 12 items per page and exclude owner/account and moderation-private fields (Owner: Nguyễn Hữu Nghĩa; search pagination is verified; detail route/service exposes only contract-defined public fields and is covered by approved/404 integration tests).
 
 ### Frontend tests and implementation — Owner: Đặng Hiển
 

@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import LandlordDashboardPage from './pages/LandlordDashboardPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import BecomeLandlordPage from './pages/BecomeLandlordPage';
+import SearchPage from './pages/SearchPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -21,6 +22,7 @@ function AppShell() {
 
   return (
     <Routes>
+      <Route path="/search" element={<SearchPage />} />
       <Route
         path="/"
         element={<Navigate to={user ? '/dashboard' : '/login'} replace />}
