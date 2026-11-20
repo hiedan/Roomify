@@ -60,8 +60,8 @@ Each task starts with a checkbox and sequential task ID, uses `[P]` only when pa
 
 ### Frontend tests and implementation — Owner: Đặng Hiển
 
-- [ ] T010 [P] [US1] Add browser tests for anonymous access to `/search`, keyword submission, district selection, and default approved search results in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển).
-- [ ] T011 [US1] Add listing search calls in `frontend/src/api/listingApi.js` and create the initial keyword/district search page in `frontend/src/pages/SearchPage.jsx`; register the public `/search` route in `frontend/src/App.jsx` and preserve API pagination metadata without changing existing authentication API behavior (Owner: Đặng Hiển; depends on T010 and the contract in `contracts/search-api.md`).
+- [x] T010 [P] [US1] Add browser tests for anonymous access to `/search`, keyword submission, district selection, and default approved search results in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển; targeted Playwright search suite: 10/10 passed on 2026-11-20 with mocked search responses).
+- [x] T011 [US1] Add listing search calls in `frontend/src/api/listingApi.js` and create the initial keyword/district search page in `frontend/src/pages/SearchPage.jsx`; register the public `/search` route in `frontend/src/App.jsx` and preserve API pagination metadata without changing existing authentication API behavior (Owner: Đặng Hiển; depends on T010 and the contract in `contracts/search-api.md`; browser checks and production build passed on 2026-11-20).
 
 **Checkpoint**: A visitor can search by keyword/location and view only approved results without signing in.
 
@@ -97,8 +97,8 @@ Each task starts with a checkbox and sequential task ID, uses `[P]` only when pa
 
 ### Frontend tests and implementation — Owner: Đặng Hiển
 
-- [ ] T019 [P] [US3] Add browser tests for empty results, loading, invalid-range feedback, simulated API failure, retry with preserved criteria, and clearing all criteria in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển).
-- [ ] T020 [US3] Implement distinct loading, empty, validation-error, and service-error states plus retry and clear-filter behavior in `frontend/src/pages/SearchPage.jsx`; do not present old results as current after a failed request (Owner: Đặng Hiển; depends on T019).
+- [x] T019 [P] [US3] Add browser tests for empty results, loading, invalid-range feedback, simulated API failure, retry with preserved criteria, and clearing all criteria in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển; targeted Playwright search suite: 10/10 passed on 2026-11-20 with mocked search responses).
+- [x] T020 [US3] Implement distinct loading, empty, validation-error, and service-error states plus retry and clear-filter behavior in `frontend/src/pages/SearchPage.jsx`; do not present old results as current after a failed request (Owner: Đặng Hiển; depends on T019; browser checks passed on 2026-11-20).
 
 **Checkpoint**: Empty results are not confused with failures; users can retry or revise criteria without losing them.
 
@@ -115,8 +115,8 @@ Each task starts with a checkbox and sequential task ID, uses `[P]` only when pa
 
 ### Frontend tests and implementation — Owner: Đặng Hiển
 
-- [ ] T023 [P] [US4] Add browser tests for result-card summary fields, next/previous page behavior with retained criteria, navigation to listing details, keyboard operation, and narrow viewport layout in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển).
-- [ ] T024 [US4] Implement listing result cards and page navigation in `frontend/src/pages/SearchPage.jsx`, add the public detail view in `frontend/src/pages/ListingDetailPage.jsx`, add its API call in `frontend/src/api/listingApi.js`, and register the public detail route in `frontend/src/App.jsx` (Owner: Đặng Hiển; depends on T023 and the detail contract in `contracts/search-api.md`).
+- [x] T023 [P] [US4] Add browser tests for result-card summary fields, next/previous page behavior with retained criteria, navigation to listing details, keyboard operation, and narrow viewport layout in `frontend/e2e/search-filtering.spec.js` (Owner: Đặng Hiển; targeted Playwright search suite: 10/10 passed on 2026-11-20 at 320 and 1280 CSS-pixel widths).
+- [x] T024 [US4] Implement listing result cards and page navigation in `frontend/src/pages/SearchPage.jsx`, add the public detail view in `frontend/src/pages/ListingDetailPage.jsx`, add its API call in `frontend/src/api/listingApi.js`, and register the public detail route in `frontend/src/App.jsx` (Owner: Đặng Hiển; depends on T023 and the detail contract in `contracts/search-api.md`; browser checks, visual review, and production build passed on 2026-11-20).
 
 **Checkpoint**: Users can browse result pages and open an approved public listing without exposing private data.
 

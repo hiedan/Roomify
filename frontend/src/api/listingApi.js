@@ -33,7 +33,7 @@ export async function getListingFilterOptions(signal) {
 
 export async function searchListings(criteria, signal) {
   const params = new URLSearchParams();
-  for (const field of ['keyword', 'district', 'roomType', 'maxPrice', 'minAreaM2', 'maxAreaM2']) {
+  for (const field of ['keyword', 'district', 'roomType', 'maxPrice', 'minAreaM2', 'maxAreaM2', 'page']) {
     const value = criteria[field];
     if (value !== undefined && value !== null && String(value).trim() !== '') {
       params.set(field, String(value).trim());
@@ -52,4 +52,14 @@ export async function searchListings(criteria, signal) {
     throw new ApiError('INVALID_RESPONSE', 'Kết quả tìm kiếm từ máy chủ không hợp lệ.');
   }
   return { listings: envelope.data, pagination: envelope.pagination };
+}
+
+export async function getListingDetail(id, signal) {
+  const envelope = await listingRequest(`/listings/${encodeURIComponent(id)}`, signal);
+  if (!envelope.data || typeof envelope.data !== 'object' ||
+      typeof envelope.data.title !== 'string' || !Array.isArray(envelope.data.images) ||
+      !Array.isArray(envelope.data.amenities)) {
+    throw new ApiError('INVALID_RESPONSE', 'Thông tin phòng từ máy chủ không hợp lệ.');
+  }
+  return envelope.data;
 }
