@@ -4,12 +4,16 @@ const { canonicalCheck, UnsupportedCheck } = require('./checkExpression');
 // Read the existing migrations themselves; do not maintain a second schema/DDL.
 function migrationContracts(files) {
   return files.map(file => {
-    const contract = { name: file.name, tables: {}, constraints: [], indexes: [] };
+    const contract = { name: file.name, tables: {}, columns: {}, constraints: [], indexes: [], sql: [] };
     const builder = new Proxy({}, {
       get: (_object, operation) => {
         if (operation === 'func') return sql => ({ sql });
         return (...args) => {
           if (operation === 'createTable') contract.tables[args[0]] = args[1];
+          if (operation === 'sql') contract.sql.push(args[0]);
+          if (operation === 'addColumn') {
+            contract.columns[args[0]] = { ...contract.columns[args[0]], ...args[1] };
+          }
           if (operation === 'addConstraint') contract.constraints.push({ table: args[0], name: args[1], options: args[2] });
           if (operation === 'createIndex') contract.indexes.push({ table: args[0], columns: [args[1]].flat(), options: args[2] || {} });
         };
@@ -108,7 +112,15 @@ function assertNamedConstraints(state, constraints, tableDefinitions) {
 }
 
 function assertSchemaHistory(state, contracts) {
-  const tableDefinitions = Object.assign({}, ...contracts.map(contract => contract.tables));
+  const tableDefinitions = {};
+  for (const contract of contracts) {
+    for (const [table, columns] of Object.entries(contract.tables)) {
+      tableDefinitions[table] = { ...tableDefinitions[table], ...columns };
+    }
+    for (const [table, columns] of Object.entries(contract.columns || {})) {
+      tableDefinitions[table] = { ...tableDefinitions[table], ...columns };
+    }
+  }
   const expectedNames = contracts.map(contract => contract.name);
   if (state.history.some((name, index) => name !== expectedNames[index])) {
     throw configurationError('public.pgmigrations differs from the checked-in migration sequence; compare schema/history manually');
@@ -120,6 +132,13 @@ function assertSchemaHistory(state, contracts) {
       if (exists !== applied) throw configurationError('Application tables and public.pgmigrations disagree; no migration history was fabricated');
       if (!applied) continue;
       assertColumnDefinitions(state, table, definitions);
+    }
+    for (const [table, definitions] of Object.entries(contract.columns || {})) {
+      for (const column of Object.keys(definitions)) {
+        const exists = state.columns.some(row => row.table_name === table && row.column_name === column);
+        if (exists !== applied) throw configurationError('Application columns and public.pgmigrations disagree; inspect the database before migrating');
+      }
+      if (applied) assertColumnDefinitions(state, table, definitions);
     }
     if (!applied) continue;
     assertNamedConstraints(state, contract.constraints, tableDefinitions);

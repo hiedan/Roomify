@@ -10,7 +10,7 @@
 
 Provide a public, responsive search experience at `/search` for approved Roomify listings. Visitors and tenants can search title, address, and district text, combine district, room type, maximum price, area, and amenity filters, and browse stable 12-item pages. The implementation extends the existing React/Vite frontend and Express/PostgreSQL backend with public listing-search, filter-options, and approved-listing detail reads. A versioned migration will add a shared room-type catalog and associate it with listings. Search queries must use validated, parameterized filters and return only explicitly selected public listing fields.
 
-The repository does not currently have public listing-read routes, a search page, or a listing-detail page. The plan therefore includes a minimal public detail view for the result-card navigation required by the specification; listing creation and moderation workflows remain out of scope. The room-type catalog values must be agreed with the listing-creation owner before implementing the migration or UI options.
+The repository does not currently have public listing-read routes, a search page, or a listing-detail page. The plan therefore includes a minimal public detail view for the result-card navigation required by the specification; listing creation and moderation workflows remain out of scope. The feature owner has confirmed the room-type catalog; share the same codes with the listing-creation owner before implementing the migration or UI options.
 
 ## Technical Context
 
@@ -26,9 +26,9 @@ The repository does not currently have public listing-read routes, a search page
 
 **Project Type**: Full-stack web application
 
-**Performance Goals**: Meet spec SC-003: with 1,000 approved listings, at least 95% of valid searches display the first page within 3 seconds in the documented verification environment. Treat this as a proposed target until the team confirms the test environment.
+**Performance Goals**: Meet the accepted spec SC-003 target: with 1,000 approved listings, at least 95% of valid searches display the first page within 3 seconds in the documented verification environment.
 
-**Constraints**: Search is public and limited to administrator-approved listings; page size is 12; ordering is `created_at DESC, id DESC`; queries must be parameterized; response fields must not expose private account or landlord data. Room-type choices and migration mapping require agreement with the listing-creation owner before implementation.
+**Constraints**: Search is public and limited to administrator-approved listings; page size is 12; ordering is `created_at DESC, id DESC`; queries must be parameterized; response fields must not expose private account or landlord data. Use the confirmed room-type catalog; leave unclassifiable existing listings null rather than guessing.
 
 **Scale/Scope**: Search and browse 1,000 prepared approved listings; include filter metadata, result paging, public result cards, and a minimal approved-listing detail view. Exclude listing creation/administration, interactive maps, favorites, messaging, availability status, and AI recommendations.
 
@@ -39,12 +39,12 @@ The repository does not currently have public listing-read routes, a search page
 - **I. User-Centered Design — Pass**: The plan traces to public room discovery requirements and includes loading, empty, validation-error, service-error, keyboard, and responsive states.
 - **II. Code Quality and Maintainability — Pass**: The feature follows the existing Express routes/controllers/services and React/Vite conventions and introduces no new runtime dependency.
 - **III. Test-First and Verification — Pass**: The design defines API, database, and browser validation for normal flows, boundaries, invalid input, and failures. The 1,000-listing performance target will be measured and reported rather than inferred from unit tests.
-- **IV. Consistent Architecture and Integration — Pass with implementation gate**: API contracts and a versioned database migration are required. The canonical room-type choices and backfill mapping must be agreed with the listing-creation owner before the migration is implemented.
+- **IV. Consistent Architecture and Integration — Pass with coordination gate**: API contracts and a versioned database migration are required. The search catalog is confirmed; share the same codes with the listing-creation owner, and leave legacy rows null when their type is unknown.
 - **V. Security and Data Integrity — Pass**: Search remains read-only and public, only approved listings are eligible, input is validated and parameterized, and public responses use explicit field projections without account/owner records.
 
 No constitutional violation requires an exception. The room-type agreement is a dependency, not a waiver.
 
-**Post-design review**: Pass. The selected schema migration, public API projections, and verification plan follow the same five principles; the room-type agreement remains an explicit implementation gate.
+**Post-design review**: Pass. The selected schema migration, public API projections, and verification plan follow the same five principles; coordinated use of the room-type catalog by listing creation remains an integration responsibility.
 
 ## Project Structure
 
@@ -98,6 +98,6 @@ No constitutional violations or additional architectural layers are proposed.
 
 ## Implementation Gates
 
-1. Agree with the listing-creation owner on the room-type choices and their stable codes. Seed the agreed choices and define how existing rows are backfilled before enforcing the listing relationship.
-2. Confirm the performance and usability targets in the specification, or retain them explicitly as proposed verification targets.
-3. Coordinate the listing room-type data contract with listing creation. This feature exposes the public filter catalog and reads the type; it does not implement listing creation.
+1. Use the confirmed room-type codes: `private_room`, `shared_room`, `studio`, and `apartment`. Share them with listing creation; leave existing listings unclassified if no reliable mapping exists.
+2. Verify the accepted performance/usability targets in the documented synthetic test environment.
+3. This feature exposes the public filter catalog and reads the type; it does not implement listing creation.

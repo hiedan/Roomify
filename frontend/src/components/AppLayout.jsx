@@ -50,7 +50,7 @@ export default function AppLayout({ children }) {
       <Brand />
       <nav className="header-nav" aria-label="Điều hướng chính">
         <NavLink to="/dashboard">Trang chủ</NavLink>
-        <button type="button" disabled title="Tìm phòng chưa khả dụng">Tìm phòng</button>
+        <NavLink to="/search">Tìm phòng</NavLink>
       </nav>
       <AccountMenu />
     </div></header>

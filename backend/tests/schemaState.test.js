@@ -25,11 +25,68 @@ test('migration contract inspection reuses every real migration without running 
   expect(actual[0].tables.listings.geom.type).toBe('geography(Point,4326)');
   expect(actual[1].tables.admin_action_audits.target_user_id.onDelete).toBe('RESTRICT');
   expect(actual[2].indexes.some(index => index.options.name === 'landlord_requests_one_pending_per_user')).toBe(true);
+  const searchMigration = actual.find(contract => contract.name === '1700000004000_search_room_types');
+  expect(searchMigration.tables.room_types).toMatchObject({
+    id: { type: 'serial', primaryKey: true },
+    code: { type: 'varchar(30)', notNull: true, unique: true },
+    name: { type: 'varchar(100)', notNull: true, unique: true },
+    is_active: { type: 'boolean', notNull: true, default: true },
+  });
+
+  expect(searchMigration.columns.listings.room_type_id).toEqual({
+    type: 'integer', references: 'room_types', onDelete: 'RESTRICT',
+  });
+  expect(searchMigration.constraints).toContainEqual({
+    table: 'room_types',
+    name: 'room_types_code_check',
+    options: { check: "code IN ('private_room','shared_room','studio','apartment')" },
+  });
+  expect(searchMigration.indexes).toContainEqual({
+    table: 'listings', columns: ['room_type_id'], options: {},
+  });
+  expect(searchMigration.sql.join('\n')).toContain("('private_room', 'Phòng trọ riêng')");
+  expect(searchMigration.sql.join('\n')).toContain("('shared_room', 'Phòng ở ghép')");
+  expect(searchMigration.sql.join('\n')).toContain("('studio', 'Studio / căn hộ mini')");
+  expect(searchMigration.sql.join('\n')).toContain("('apartment', 'Căn hộ chung cư')");
 });
 
 test('an empty database and a valid applied prefix are accepted', () => {
   expect(() => assertSchemaHistory({ tables: [], history: [], columns: [], constraints: [], indexes: [], extensions: [] }, contracts)).not.toThrow();
   expect(() => assertSchemaHistory(appliedState(), contracts)).not.toThrow();
+});
+
+test('schema history validates columns added to an existing table', () => {
+  const columnContracts = [
+    ...contracts,
+    { name: '002_add_optional_department', tables: {}, columns: {
+      users: { department: { type: 'varchar(20)' } },
+    }, constraints: [], indexes: [], sql: [] },
+  ];
+  const state = appliedState();
+  state.history.push('002_add_optional_department');
+  state.columns.push({
+    table_name: 'users', column_name: 'department', udt_name: 'varchar',
+    is_nullable: 'YES', character_maximum_length: 20,
+  });
+  expect(() => assertSchemaHistory(state, columnContracts)).not.toThrow();
+
+  state.columns = state.columns.filter(column => column.column_name !== 'department');
+  expect(() => assertSchemaHistory(state, columnContracts)).toThrow(/columns and public\.pgmigrations disagree/);
+});
+
+test('schema history refuses an added column that appears before its migration', () => {
+  const columnContracts = [
+    ...contracts,
+    { name: '002_add_optional_department', tables: {}, columns: {
+      users: { department: { type: 'varchar(20)' } },
+    }, constraints: [], indexes: [], sql: [] },
+  ];
+  const state = appliedState();
+  state.columns.push({
+    table_name: 'users', column_name: 'department', udt_name: 'varchar',
+    is_nullable: 'YES', character_maximum_length: 20,
+  });
+  expect(() => assertSchemaHistory(state, columnContracts)).toThrow(/columns and public\.pgmigrations disagree/);
 });
 
 test.each([
@@ -58,6 +115,7 @@ const realContracts = migrationContracts(fs.readdirSync(migrationDirectory).filt
   .map(file => ({ name: file.slice(0, -3), path: path.join(migrationDirectory, file) })));
 const checkColumns = {
   users: { role: 'varchar(20)' },
+  room_types: { code: 'varchar(30)' },
   listings: { lat: 'double precision', lng: 'double precision', price: 'integer', area_m2: 'real', status: 'varchar(20)' },
   admin_action_audits: { action_type: 'varchar(30)', previous_value: 'varchar(20)', new_value: 'varchar(20)', actor_user_id: 'bigint', target_user_id: 'bigint' },
   landlord_requests: { status: 'varchar(20)', reviewed_at: 'timestamptz', rejection_reason: 'varchar(500)' },
@@ -83,6 +141,15 @@ function expectCheck(table, name, definition, accepted) {
   if (accepted) expect(inspect).not.toThrow();
   else expect(inspect).toThrow(`public.${table}.${name}`);
 }
+
+test('room-type catalog CHECK allows exactly the confirmed feature values', () => {
+  expectCheck('room_types', 'room_types_code_check',
+    "CHECK (code IN ('private_room','shared_room','studio','apartment'))", true);
+  expectCheck('room_types', 'room_types_code_check',
+    "CHECK (code IN ('private_room','shared_room','studio','apartment','whole_house'))", false);
+  expectCheck('room_types', 'room_types_code_check',
+    "CHECK (code IN ('private_room','shared_room','studio'))", false);
+});
 
 test.each([
   ['lat', '-90', '90'], ['lng', '-180', '180'],
