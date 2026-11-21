@@ -3,6 +3,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import LandlordDashboardPage from './pages/LandlordDashboardPage';
+import MyListingsPage from './pages/MyListingsPage';
+import PostListingPage from './pages/PostListingPage';
+import EditListingPage from './pages/EditListingPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import BecomeLandlordPage from './pages/BecomeLandlordPage';
 import SearchPage from './pages/SearchPage';
@@ -55,6 +58,36 @@ function AppShell() {
           <ProtectedRoute>
             <RoleRoute allowedRoles={['landlord']} redirectTo="/dashboard">
               <LandlordDashboardPage />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/landlord/listings"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={['landlord']} redirectTo="/dashboard">
+              <MyListingsPage />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/landlord/listings/create"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={['landlord']} redirectTo="/dashboard">
+              <PostListingPage />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/landlord/listings/:id/edit"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={['landlord']} redirectTo="/dashboard">
+              <EditListingPage />
             </RoleRoute>
           </ProtectedRoute>
         }
