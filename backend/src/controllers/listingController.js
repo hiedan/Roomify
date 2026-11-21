@@ -19,9 +19,41 @@ async function search(req, res, next) {
   }
 }
 
+async function create(req, res, next) {
+  try {
+    return sendSuccess(res, await listings.createListing(req.user.id, req.body), 201);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function mine(req, res, next) {
+  try {
+    return sendSuccess(res, await listings.getLandlordListings(req.user.id, req.query));
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function mineDetail(req, res, next) {
+  try {
+    return sendSuccess(res, await listings.getLandlordListingById(req.user.id, req.params.id));
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function detail(req, res, next) {
   try {
     return sendSuccess(res, await listingSearch.getApprovedListingById(req.params.id));
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function update(req, res, next) {
+  try {
+    return sendSuccess(res, await listings.updateOwnedListing(req.user.id, req.params.id, req.body));
   } catch (err) {
     return next(err);
   }
@@ -35,4 +67,13 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { filters, search, detail, remove };
+module.exports = {
+  filters,
+  search,
+  create,
+  mine,
+  mineDetail,
+  detail,
+  update,
+  remove,
+};

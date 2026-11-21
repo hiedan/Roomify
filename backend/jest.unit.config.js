@@ -13,6 +13,7 @@ module.exports = {
     '<rootDir>/tests/errorHandler.test.js',
     '<rootDir>/tests/globalSetup.test.js',
     '<rootDir>/tests/listingService.test.js',
+    '<rootDir>/tests/listingController.test.js',
     '<rootDir>/tests/listingSearchService.test.js',
     '<rootDir>/tests/listingSearchApi.test.js',
     '<rootDir>/tests/databaseConfig.test.js',
