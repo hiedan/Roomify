@@ -52,6 +52,16 @@ npm.cmd test -- --runInBand
 
 The search API tests should verify anonymous access, approved-only visibility, all filters together, all-selected-amenities matching, inclusive boundaries, malformed/unsupported criteria, deterministic paging, public-field privacy, detail visibility, empty results, and database/service errors.
 
+### Backend verification on 2026-11-21
+
+- Environment: Windows, Node.js v26.13.0, npm 11.20.0. The read-only `npm.cmd run db:check:test` succeeded before and after testing and confirmed the isolated Roomify-Test target and expected schema. No application database was migrated.
+- `npm.cmd run test:unit`: **passed**, 18/18 suites and 572/572 tests.
+- `npm.cmd run lint`: **passed**, 0 errors and 1 existing warning for an unused `eslint-disable` directive in `backend/migrations/1700000000000_init.js`.
+- `npm.cmd test -- --runInBand`: **passed**, 28/28 suites and 827/827 tests; elapsed time 905.255 seconds. `listingSearchApi.integration.test.js` passed all 14 search integration cases.
+- The previous 5-second Jest default was too short for the remote test database: the focused admin integration suite passed with 30-second per-test timeout and included an 18.6-second test. Set `testTimeout: 30000` in `backend/jest.config.js`, which is used by the integration suite; the separate unit Jest configuration retains its existing default. The integration suite then passed without the earlier timeout or audit foreign-key cleanup failures.
+- Browser fixture cleanup now snapshots its ID list before issuing SQL, so Jest mock call history retains the BIGINT IDs even after successful cleanup removes them from the tracked list.
+- T025 backend verification passed. T026 frontend verification was recorded on 2026-11-21; T027 and T028 remain open.
+
 ## Verify the Browser Flow
 
 From `frontend/`, run the existing Playwright flow:
@@ -75,7 +85,7 @@ Verify keyboard-only operation and absence of horizontal page scrolling at viewp
 - Environment: Windows, Chromium through Playwright, Vite frontend, and the isolated Roomify-Test backend used by the Playwright server. `npm.cmd run db:check:test` succeeded before browser tests and reported project ref `seggbbbuspquwxeifsab` with the search room-type migration present. No application database was migrated.
 - From `frontend/`, `npm.cmd run build` passed after the final UI changes.
 - From `frontend/`, `npm.cmd run test:e2e -- e2e/search-filtering.spec.js` passed 10/10 after the final changes. Search API responses in these browser cases were intercepted and mocked; the tests verify frontend behavior, including keyboard access and no horizontal page scrolling at 320 and 1280 CSS pixels, but do not establish real search API/database integration.
-- From `frontend/`, `npm.cmd run test:e2e` completed with 48/50 passed before the final page-retry test was added. Two existing auth-session cases failed while using Roomify-Test: one timed out during fixture cleanup, and another lost a PostgreSQL connection. A focused rerun of those two cases passed 1/2; the remaining case timed out waiting for login to finish. The full Playwright gate is **not passing** in this environment, so T026 remains open.
+- From `frontend/`, `npm.cmd run test:e2e` completed with 48/50 passed before the final page-retry test was added. Two existing auth-session cases failed while using Roomify-Test: one timed out during fixture cleanup, and another lost a PostgreSQL connection. A focused rerun of those two cases passed 1/2; the remaining case timed out waiting for login to finish. At that point, the full Playwright gate was **not passing** and T026 remained open; see the 2026-11-21 verification below.
 - Visual review used the UC06 search and UC08 listing-detail prototype images. The implemented layout follows the filter sidebar, result cards, pagination, image gallery, and detail-information arrangement. The prototype's minimum-price/multi-type controls and landlord contact card are omitted because the current search contract does not provide those operations or public account fields. Broken or missing image URLs show a neutral placeholder.
 - SC-003 performance measurement with 1,000 synthetic approved listings and the SC-004 ten-person usability check were not run. T027 and the shared completion review T028 remain open.
 

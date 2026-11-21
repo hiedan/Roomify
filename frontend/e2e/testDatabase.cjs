@@ -22,19 +22,23 @@ async function account() {
 async function cleanup() {
   assertTestTarget();
   if (!ids.length) return;
+  const idsToClean = [...ids];
   const client = await pool.connect();
   let releaseError;
   try {
     await client.query('BEGIN');
     // Real admin UI actions create restricted audit references to these fixtures.
     // Delete only records owned by this worker's generated test-account IDs.
-    await client.query('DELETE FROM admin_action_audits WHERE actor_user_id = ANY($1::bigint[]) OR target_user_id = ANY($1::bigint[])', [ids]);
-    await client.query('DELETE FROM users WHERE id = ANY($1::bigint[])', [ids]);
+    await client.query('DELETE FROM admin_action_audits WHERE actor_user_id = ANY($1::bigint[]) OR target_user_id = ANY($1::bigint[])', [idsToClean]);
+    await client.query('DELETE FROM users WHERE id = ANY($1::bigint[])', [idsToClean]);
     await client.query('COMMIT');
   } catch (error) {
     try { await client.query('ROLLBACK'); } catch (rollbackError) { releaseError = rollbackError; }
     throw error;
   } finally { client.release(releaseError); }
-  ids.length = 0;
+  for (const id of idsToClean) {
+    const index = ids.indexOf(id);
+    if (index !== -1) ids.splice(index, 1);
+  }
 }
 module.exports = { account, cleanup, query, pool, config };
