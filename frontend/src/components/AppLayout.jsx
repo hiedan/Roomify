@@ -34,7 +34,11 @@ export function AccountMenu() {
       <div className="dropdown-profile"><Avatar user={user} /><div><strong>{user.fullName}</strong><span>{user.email}</span></div></div>
       <nav aria-label="Tài khoản">
         <Link to="/dashboard#account-profile"><Icon name="user" />Trang cá nhân</Link>
-        {user.role === 'landlord' && <Link to="/landlord"><Icon name="building" />Quản lý phòng</Link>}
+        {user.role === 'landlord' && <>
+          <Link to="/landlord"><Icon name="building" />Quản lý phòng</Link>
+          <Link to="/landlord/listings"><Icon name="grid" />Tin của tôi</Link>
+          <Link to="/landlord/listings/create"><Icon name="home" />Đăng tin mới</Link>
+        </>}
         {user.role === 'tenant' && <Link to="/become-landlord"><Icon name="building" />Trở thành chủ trọ</Link>}
         {user.role === 'admin' && <Link to="/admin"><Icon name="users" />Quản lý người dùng</Link>}
         <button type="button" disabled title="Cài đặt chưa khả dụng"><Icon name="settings" />Cài đặt</button>
@@ -58,10 +62,11 @@ export default function AppLayout({ children }) {
   </div>;
 }
 
-export function PortalLayout({ kind, children }) {
+export function PortalLayout({ kind, sectionTitle, children }) {
   const { user, logout } = useAuth();
   const admin = kind === 'admin';
   const name = admin ? 'Quản trị' : 'Chủ trọ';
+  const currentTitle = sectionTitle || (admin ? 'Quản lý người dùng' : 'Quản lý phòng');
   return <div className={`portal-layout portal-layout--${kind}`}>
     <aside className="portal-sidebar" aria-label={`Không gian ${name.toLocaleLowerCase('vi')}`}>
       <Brand />
@@ -70,8 +75,9 @@ export function PortalLayout({ kind, children }) {
         <NavLink to="/dashboard"><Icon name="grid" />Trang chủ</NavLink>
         {admin
           ? <button type="button" disabled title="Duyệt tin chưa khả dụng"><Icon name="grid" />Duyệt tin đăng</button>
-          : <button type="button" disabled title="Đăng tin chưa khả dụng"><Icon name="home" />Đăng tin mới</button>}
-        <NavLink to={admin ? '/admin' : '/landlord'}><Icon name={admin ? 'users' : 'building'} />{admin ? 'Quản lý người dùng' : 'Quản lý phòng'}</NavLink>
+          : <NavLink to="/landlord/listings/create"><Icon name="home" />Đăng tin mới</NavLink>}
+        <NavLink to={admin ? '/admin' : '/landlord'} end={!admin}><Icon name={admin ? 'users' : 'building'} />{admin ? 'Quản lý người dùng' : 'Quản lý phòng'}</NavLink>
+        {!admin && <NavLink to="/landlord/listings" end><Icon name="grid" />Tin của tôi</NavLink>}
         <Link to="/dashboard#account-profile"><Icon name="user" />Hồ sơ cá nhân</Link>
       </nav>
       <div className="sidebar-note"><Icon name="shield" /><div><strong>{admin ? 'Không gian quản trị' : 'Không gian chủ trọ'}</strong><p>{admin ? 'Quản lý quyền truy cập tài khoản.' : 'Quản lý thông tin cho thuê của bạn.'}</p></div></div>
@@ -79,7 +85,7 @@ export function PortalLayout({ kind, children }) {
       <button type="button" className="sidebar-logout" onClick={logout}><Icon name="logout" size={18} />Đăng xuất</button>
     </aside>
     <div className="portal-main">
-      <header className="portal-header"><div><span>{name}</span><span className="breadcrumb-separator">/</span><strong>{admin ? 'Quản lý người dùng' : 'Quản lý phòng'}</strong></div><AccountMenu /></header>
+      <header className="portal-header"><div><span>{name}</span><span className="breadcrumb-separator">/</span><strong>{currentTitle}</strong></div><AccountMenu /></header>
       {children}
     </div>
   </div>;
