@@ -43,8 +43,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 **Purpose**: Establish test fixtures, client stubs, and baseline configuration so backend and frontend tracks can progress simultaneously without blocking.
 
-- [ ] T001 Align API contract with camelCase JSON fields (`areaM2`, `roomTypeId`, `amenityIds`, `imageUrls`, `ownerId`, `rejectReason`, `coverImageUrl`, `isCover`, `sortOrder`, `createdAt`), PostGIS spatial point syntax `ST_SetSRID(ST_MakePoint($lng, $lat), 4326)::geography`, 4 room types, and image constraints in `src/specs/003-listing-management/contracts/listing-management-api.md` (Owner: Từ Thái Hưng & Đỗ Quốc Đại).
-- [ ] T002 [P] Create backend test fixtures and seed helpers for authenticated landlords, synthetic listings in each status (`pending`, `approved`, `rejected`), and image URLs in `backend/tests/fixtures/listingFixtures.js` (Owner: Từ Thái Hưng).
+- [X] T001 Align API contract with camelCase JSON fields (`areaM2`, `roomTypeId`, `amenityIds`, `imageUrls`, `ownerId`, `rejectReason`, `coverImageUrl`, `isCover`, `sortOrder`, `createdAt`), PostGIS spatial point syntax `ST_SetSRID(ST_MakePoint($lng, $lat), 4326)::geography`, 4 room types, and image constraints in `src/specs/003-listing-management/contracts/listing-management-api.md` (Owner: Từ Thái Hưng & Đỗ Quốc Đại).
+- [X] T002 [P] Create backend test fixtures and seed helpers for authenticated landlords, synthetic listings in each status (`pending`, `approved`, `rejected`), and image URLs in `backend/tests/fixtures/listingFixtures.js` (Owner: Từ Thái Hưng).
 - [ ] T003 [P] Initialize frontend API client module stub with standard response envelope handling in `frontend/src/api/listingManagementApi.js` (Owner: Đỗ Quốc Đại).
 
 ---
@@ -55,7 +55,7 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 **Purpose**: Core backend validation schemas, Express route structure, and frontend landlord routing that all user stories depend upon.
 
-- [ ] T004 Implement Zod validation schemas (`createListingSchema`, `updateListingSchema`, `queryMineSchema`) with `.strict()` using camelCase property keys in `backend/src/services/listingService.js` and prepare Express route ordering in `backend/src/routes/listingRoutes.js` ensuring `GET /mine` and `GET /mine/:id` are declared above `GET /:id` (Owner: Từ Thái Hưng; depends on T001).
+- [X] T004 Implement Zod validation schemas (`createListingSchema`, `updateListingSchema`, `queryMineSchema`) with `.strict()` using camelCase property keys in `backend/src/services/listingService.js` and prepare Express route ordering in `backend/src/routes/listingRoutes.js` ensuring `GET /mine` and `GET /mine/:id` are declared above `GET /:id` (Owner: Từ Thái Hưng; depends on T001).
 - [ ] T005 [P] Setup landlord private route guards and navigation links for `/landlord/listings`, `/landlord/listings/create`, and `/landlord/listings/:id/edit` in `frontend/src/App.jsx` (Owner: Đỗ Quốc Đại; depends on T003).
 
 **Checkpoint**: Foundation ready. User story development can proceed in parallel across backend and frontend.
@@ -72,10 +72,10 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Backend Implementation & Verification (Owner: Từ Thái Hưng)
 
-- [ ] T006 [P] [US1] Add unit tests in `backend/tests/listingService.test.js` verifying `createListing` transaction: user row lock (`users` FOR UPDATE), `is_active` check, `landlord` role check, room type foreign key validation against active catalog, photo URL bounds (1 to 10 URLs), PostGIS point calculation, and initial status `pending`.
-- [ ] T007 [P] [US1] Add API integration tests for `POST /api/v1/listings` in `backend/tests/listingApi.integration.test.js` testing 201 Created response envelope, 401 Unauthorized, 403 Forbidden (for tenant role or disabled landlord), and 400 Bad Request on invalid payloads.
-- [ ] T008 [US1] Implement `createListing(actorId, input)` in `backend/src/services/listingService.js` using a dedicated pooled client transaction (`BEGIN ... COMMIT / ROLLBACK`), user lock, PostGIS geometry insertion `ST_SetSRID(ST_MakePoint($lng, $lat), 4326)::geography`, batch insertion into `listing_images` (`is_cover = (index === 0)`), and insertion into `listing_amenities` (depends on T006, T007).
-- [ ] T009 [US1] Implement `create` handler in `backend/src/controllers/listingController.js` and expose `POST /api/v1/listings` with `requireAuth` and `requireRole('landlord')` in `backend/src/routes/listingRoutes.js`, returning HTTP 201 via `sendSuccess(res, result, 201)` (depends on T008).
+- [X] T006 [P] [US1] Add unit tests in `backend/tests/listingService.test.js` verifying `createListing` transaction: user row lock (`users` FOR UPDATE), `is_active` check, `landlord` role check, room type foreign key validation against active catalog, photo URL bounds (1 to 10 URLs), PostGIS point calculation, and initial status `pending`.
+- [X] T007 [P] [US1] Add API integration tests for `POST /api/v1/listings` in `backend/tests/listingApi.integration.test.js` testing 201 Created response envelope, 401 Unauthorized, 403 Forbidden (for tenant role or disabled landlord), and 400 Bad Request on invalid payloads.
+- [X] T008 [US1] Implement `createListing(actorId, input)` in `backend/src/services/listingService.js` using a dedicated pooled client transaction (`BEGIN ... COMMIT / ROLLBACK`), user lock, PostGIS geometry insertion `ST_SetSRID(ST_MakePoint($lng, $lat), 4326)::geography`, batch insertion into `listing_images` (`is_cover = (index === 0)`), and insertion into `listing_amenities` (depends on T006, T007).
+- [X] T009 [US1] Implement `create` handler in `backend/src/controllers/listingController.js` and expose `POST /api/v1/listings` with `requireAuth` and `requireRole('landlord')` in `backend/src/routes/listingRoutes.js`, returning HTTP 201 via `sendSuccess(res, result, 201)` (depends on T008).
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
@@ -96,7 +96,7 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Backend Implementation & Verification (Owner: Từ Thái Hưng)
 
-- [ ] T012 [P] [US2] Add spatial coordinate boundary and precision tests in `backend/tests/listingService.test.js` validating latitude $[-90, 90]$, longitude $[-180, 180]$, PostGIS `(lng, lat)` order, and 6-decimal-place precision retention.
+- [X] T012 [P] [US2] Add spatial coordinate boundary and precision tests in `backend/tests/listingService.test.js` validating latitude $[-90, 90]$, longitude $[-180, 180]$, PostGIS `(lng, lat)` order, and 6-decimal-place precision retention.
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
@@ -117,10 +117,10 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Backend Implementation & Verification (Owner: Từ Thái Hưng)
 
-- [ ] T015 [P] [US3] Add unit tests in `backend/tests/listingService.test.js` for `getLandlordListings`: ownership isolation (`owner_id = actorId`), descending ordering by `created_at DESC`, status query filtering, and summary counts (`total`, `pending`, `approved`, `rejected`) in the `{ listings, summary }` return shape.
-- [ ] T016 [P] [US3] Add API integration tests for `GET /api/v1/listings/mine` and `GET /api/v1/listings/mine/:id` in `backend/tests/listingApi.integration.test.js` testing `sendSuccess` envelope with `data.listings` and `data.summary`, full photos and amenities arrays, exclusion of other landlords' data, status filtering, and rejection reason presence.
-- [ ] T017 [US3] Implement `getLandlordListings(actorId, query)` and `getLandlordListingById(actorId, listingId)` in `backend/src/services/listingService.js` returning camelCase objects, joined `roomType`, full `images`, and `amenities` lists, plus parallel aggregate query for status counts (depends on T015, T016).
-- [ ] T018 [US3] Implement `mine` and `mineDetail` handlers in `backend/src/controllers/listingController.js` and register `router.get('/mine', requireAuth, requireRole('landlord'), controller.mine)` and `router.get('/mine/:id', requireAuth, requireRole('landlord'), requireOwnership, controller.mineDetail)` in `backend/src/routes/listingRoutes.js` strictly placed ABOVE `GET /:id` (depends on T017).
+- [X] T015 [P] [US3] Add unit tests in `backend/tests/listingService.test.js` for `getLandlordListings`: ownership isolation (`owner_id = actorId`), descending ordering by `created_at DESC`, status query filtering, and summary counts (`total`, `pending`, `approved`, `rejected`) in the `{ listings, summary }` return shape.
+- [X] T016 [P] [US3] Add API integration tests for `GET /api/v1/listings/mine` and `GET /api/v1/listings/mine/:id` in `backend/tests/listingApi.integration.test.js` testing `sendSuccess` envelope with `data.listings` and `data.summary`, full photos and amenities arrays, exclusion of other landlords' data, status filtering, and rejection reason presence.
+- [X] T017 [US3] Implement `getLandlordListings(actorId, query)` and `getLandlordListingById(actorId, listingId)` in `backend/src/services/listingService.js` returning camelCase objects, joined `roomType`, full `images`, and `amenities` lists, plus parallel aggregate query for status counts (depends on T015, T016).
+- [X] T018 [US3] Implement `mine` and `mineDetail` handlers in `backend/src/controllers/listingController.js` and register `router.get('/mine', requireAuth, requireRole('landlord'), controller.mine)` and `router.get('/mine/:id', requireAuth, requireRole('landlord'), requireOwnership, controller.mineDetail)` in `backend/src/routes/listingRoutes.js` strictly placed ABOVE `GET /:id` (depends on T017).
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
@@ -141,10 +141,10 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Backend Implementation & Verification (Owner: Từ Thái Hưng)
 
-- [ ] T021 [P] [US4] Add unit tests in `backend/tests/listingService.test.js` for `updateOwnedListing`: user lock, listing lock (`FOR UPDATE`), ownership check (`owner_id === actorId`), no-op detection, substantive update triggering `status = 'pending'` and `reject_reason = NULL`, and image array replacement.
-- [ ] T022 [P] [US4] Add API integration tests for `PATCH /api/v1/listings/:id` in `backend/tests/listingApi.integration.test.js` testing 200 OK, 403 Forbidden for non-owners, 404 Not Found, 400 Validation Error, and verified removal of edited approved listings from public search results.
-- [ ] T023 [US4] Implement `updateOwnedListing(actorId, listingId, input)` in `backend/src/services/listingService.js` with atomic transaction, user/listing locking, dynamic parameterized SQL update with camelCase inputs, PostGIS point re-calculation, automatic status reset to `'pending'`, clearing `reject_reason = NULL`, and transactional image replacement (depends on T021, T022).
-- [ ] T024 [US4] Implement `update` handler in `backend/src/controllers/listingController.js` and register `router.patch('/:id', requireAuth, requireRole('landlord'), requireOwnership, controller.update)` in `backend/src/routes/listingRoutes.js` (depends on T023).
+- [X] T021 [P] [US4] Add unit tests in `backend/tests/listingService.test.js` for `updateOwnedListing`: user lock, listing lock (`FOR UPDATE`), ownership check (`owner_id === actorId`), no-op detection, substantive update triggering `status = 'pending'` and `reject_reason = NULL`, and image array replacement.
+- [X] T022 [P] [US4] Add API integration tests for `PATCH /api/v1/listings/:id` in `backend/tests/listingApi.integration.test.js` testing 200 OK, 403 Forbidden for non-owners, 404 Not Found, 400 Validation Error, and verified removal of edited approved listings from public search results.
+- [X] T023 [US4] Implement `updateOwnedListing(actorId, listingId, input)` in `backend/src/services/listingService.js` with atomic transaction, user/listing locking, dynamic parameterized SQL update with camelCase inputs, PostGIS point re-calculation, automatic status reset to `'pending'`, clearing `reject_reason = NULL`, and transactional image replacement (depends on T021, T022).
+- [X] T024 [US4] Implement `update` handler in `backend/src/controllers/listingController.js` and register `router.patch('/:id', requireAuth, requireRole('landlord'), requireOwnership, controller.update)` in `backend/src/routes/listingRoutes.js` (depends on T023).
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
@@ -165,7 +165,7 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Backend Verification (Owner: Từ Thái Hưng)
 
-- [ ] T027 [P] [US5] Add integration tests in `backend/tests/listingApi.integration.test.js` verifying the existing `DELETE /api/v1/listings/:id` endpoint: 200 OK, cascading removal of associated rows in `listing_images`, `listing_amenities`, and `favorites`, 403 Forbidden on non-owned listings, and 404 on missing listings.
+- [X] T027 [P] [US5] Add integration tests in `backend/tests/listingApi.integration.test.js` verifying the existing `DELETE /api/v1/listings/:id` endpoint: 200 OK, cascading removal of associated rows in `listing_images`, `listing_amenities`, and `favorites`, 403 Forbidden on non-owned listings, and 404 on missing listings.
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
@@ -182,7 +182,7 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 **Purpose**: Execute end-to-end regression testing, performance validation, and documentation updates across both subsystems.
 
-- [ ] T030 [P] Execute backend test commands (`npm.cmd run lint`, `npm.cmd run test:unit`, and `npm.cmd test -- --runInBand`) against Roomify-Test and record clean pass results (Owner: Từ Thái Hưng).
+- [X] T030 [P] Execute backend test commands (`npm.cmd run lint`, `npm.cmd run test:unit`, and `npm.cmd test -- --runInBand`) against Roomify-Test and record clean pass results (Owner: Từ Thái Hưng).
 - [ ] T031 [P] Execute full frontend Playwright suite (`npx playwright test frontend/e2e/landlord-*.spec.js`) and verify responsive layout at 320px and 1280px viewports (Owner: Đỗ Quốc Đại).
 - [ ] T032 Complete full lifecycle verification walkthrough (Create listing -> View in My Listings -> Edit -> Verify status reset to Pending -> Delete) per [quickstart.md](./quickstart.md) and confirm zero regressions in `listingSearchService.js` (Owner: Từ Thái Hưng & Đỗ Quốc Đại; depends on T030, T031).
 
