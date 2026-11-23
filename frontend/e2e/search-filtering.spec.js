@@ -51,13 +51,14 @@ test('anonymous users can combine filters and retain all criteria when searching
   await page.goto('/search');
   await expect(page.getByRole('main', { name: 'Tìm kiếm phòng' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Tìm phòng phù hợp' })).toBeVisible();
-  await expect(page.getByLabel('Khu vực')).toContainText('Bình Thạnh');
+  await expect(page.getByLabel('Tỉnh/Thành phố')).toContainText('Thành phố Hà Nội');
   await expect(page.getByLabel('Loại phòng')).toContainText('Studio / căn hộ mini');
   await expect(page.getByRole('checkbox', { name: 'Wifi' })).toBeVisible();
   await expect(page.getByRole('checkbox', { name: 'Chỗ để xe' })).toBeVisible();
 
   await page.getByLabel('Từ khóa').fill(' gần trung tâm ');
-  await page.getByLabel('Khu vực').selectOption({ label: 'Bình Thạnh' });
+  await page.getByLabel('Tỉnh/Thành phố').selectOption('01');
+  await page.getByLabel('Phường/Xã').selectOption('00004');
   await page.getByLabel('Loại phòng').selectOption('studio');
   await page.getByLabel('Giá tối đa (VND/tháng)').fill('5000000');
   await page.getByLabel('Diện tích tối thiểu (m²)').fill('20');
@@ -70,7 +71,8 @@ test('anonymous users can combine filters and retain all criteria when searching
   await expect.poll(() => searchRequests.length).toBeGreaterThanOrEqual(2);
   const appliedSearch = searchRequests.at(-1);
   expect(appliedSearch.searchParams.get('keyword')).toBe('gần trung tâm');
-  expect(appliedSearch.searchParams.get('district')).toBe('Bình Thạnh');
+  expect(appliedSearch.searchParams.get('provinceCode')).toBe('01');
+  expect(appliedSearch.searchParams.get('wardCode')).toBe('00004');
   expect(appliedSearch.searchParams.get('roomType')).toBe('studio');
   expect(appliedSearch.searchParams.get('maxPrice')).toBe('5000000');
   expect(appliedSearch.searchParams.get('minAreaM2')).toBe('20');
@@ -78,14 +80,15 @@ test('anonymous users can combine filters and retain all criteria when searching
   expect(appliedSearch.searchParams.getAll('amenityIds')).toEqual(['2', '3']);
 
   await expect(page.getByLabel('Từ khóa')).toHaveValue(' gần trung tâm ');
-  await expect(page.getByLabel('Khu vực')).toHaveValue('Bình Thạnh');
+  await expect(page.getByLabel('Tỉnh/Thành phố')).toHaveValue('01');
+  await expect(page.getByLabel('Phường/Xã')).toHaveValue('00004');
   await expect(page.getByLabel('Loại phòng')).toHaveValue('studio');
   await expect(page.getByLabel('Giá tối đa (VND/tháng)')).toHaveValue('5000000');
   await expect(page.getByRole('checkbox', { name: 'Wifi' })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: 'Chỗ để xe' })).toBeChecked();
 });
 
-test('anonymous keyword and district search starts with approved results', async ({ page }) => {
+test('anonymous keyword and province search starts with approved results', async ({ page }) => {
   const requests = [];
   await page.route('**/api/v1/listings**', route => {
     const url = new URL(route.request().url());
@@ -97,10 +100,26 @@ test('anonymous keyword and district search starts with approved results', async
   await expect(page.getByRole('heading', { name: searchResult.title })).toBeVisible();
   expect(requests[0].search).toBe('');
   await page.getByLabel('Từ khóa').fill('  gần trung tâm  ');
-  await page.getByLabel('Khu vực').selectOption('Bình Thạnh');
+  await page.getByLabel('Tỉnh/Thành phố').selectOption('01');
   await page.getByRole('button', { name: 'Áp dụng bộ lọc' }).click();
   await expect.poll(() => requests.at(-1)?.searchParams.get('keyword')).toBe('gần trung tâm');
-  expect(requests.at(-1).searchParams.get('district')).toBe('Bình Thạnh');
+  expect(requests.at(-1).searchParams.get('provinceCode')).toBe('01');
+});
+
+test('province changes reset the ward and the catalog is available without listings', async ({ page }) => {
+  await page.route('**/api/v1/listings**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/filters')) return route.fulfill({ json: { success: true, data: { districts: [], roomTypes: [], amenities: [{ id: '1', name: 'Wifi' }] } } });
+    return route.fulfill({ json: { success: true, data: [], pagination: { page: 1, limit: 12, total: 0 } } });
+  });
+  await page.goto('/search');
+  await expect(page.getByRole('checkbox', { name: 'Wifi' })).toBeVisible();
+  await expect(page.getByLabel('Phường/Xã')).toBeDisabled();
+  await page.getByLabel('Tỉnh/Thành phố').selectOption('01');
+  await page.getByLabel('Phường/Xã').selectOption('00004');
+  await page.getByLabel('Tỉnh/Thành phố').selectOption('79');
+  await expect(page.getByLabel('Phường/Xã')).toHaveValue('');
+  await expect(page.getByLabel('Phường/Xã').locator('option[value="00004"]')).toHaveCount(0);
 });
 
 test('empty results can clear all criteria and search again', async ({ page }) => {
@@ -236,9 +255,9 @@ test('keyboard flow fits 320 and 1280 CSS pixel viewports', async ({ page }) => 
     await page.getByLabel('Từ khóa').focus();
     await page.keyboard.type('studio');
     await page.keyboard.press('Tab');
-    await expect(page.getByLabel('Khu vực')).toBeFocused();
+    await expect(page.getByLabel('Tỉnh/Thành phố')).toBeFocused();
     const detailLink = page.getByRole('link', { name: 'Xem chi tiết' });
-    for (let index = 0; index < 16 && !(await detailLink.evaluate(element => element === document.activeElement)); index += 1) {
+    for (let index = 0; index < 18 && !(await detailLink.evaluate(element => element === document.activeElement)); index += 1) {
       await page.keyboard.press('Tab');
     }
     await expect(detailLink).toBeFocused();

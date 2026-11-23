@@ -152,6 +152,12 @@ As a visitor or tenant, I want to browse result pages and understand the key fac
 - Search is available to visitors and tenants. Landlord management of private or unpublished listings is not part of public search.
 - Search results include listings approved by an administrator. The current listing workflow does not define availability states such as vacant, rented, or hidden; filtering by availability is outside this version.
 - Searchable text comprises listing title, street/address, and district. District, room type, maximum monthly price, room area, and the amenities associated with listings are available as filter criteria.
+
+## Post-merger location and amenity catalog update (2026-11-23)
+
+- The search form offers two administrative levels: province/city, then its ward/commune/special zone. The catalog is available even when no listings exist.
+- Province and ward codes follow the post-2025 national catalog. A ward selection requires its parent province. Search matches only listings with verified codes; historical district text is retained for compatibility and is not automatically remapped.
+- The amenity filter offers every entry in the existing eight-item catalog. Selecting an amenity still requires every result to have that amenity, even if the selected value currently yields zero listings.
 - When several filter categories are combined, all selected categories must match. When multiple amenities are selected, a result must have every selected amenity.
 - The maximum monthly price and room-area bounds are inclusive. Price is entered and displayed in VND per month; area is entered and displayed in square meters.
 - The room-type filter uses the following shared catalog for listing creation and search: `private_room` (Phòng trọ riêng), `shared_room` (Phòng ở ghép), `studio` (Studio / căn hộ mini), and `apartment` (Căn hộ chung cư). A whole-house category is outside this feature's current scope.

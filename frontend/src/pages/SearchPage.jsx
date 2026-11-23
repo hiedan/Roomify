@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ListingLayout from '../components/ListingLayout';
 import ListingPhoto from '../components/ListingPhoto';
+import { listingLocation } from '../components/listingLocation';
 import { getListingFilterOptions, searchListings } from '../api/listingApi';
+import provinces from '../../../shared/vietnam-administrative-units.json';
 
-const emptyCriteria = { keyword: '', district: '', roomType: '', maxPrice: '', minAreaM2: '', maxAreaM2: '', amenityIds: [] };
+const emptyCriteria = { keyword: '', provinceCode: '', wardCode: '', roomType: '', maxPrice: '', minAreaM2: '', maxAreaM2: '', amenityIds: [] };
 const formatPrice = value => `${new Intl.NumberFormat('vi-VN').format(value)} đ/tháng`;
 
 function SearchResult({ listing }) {
@@ -16,7 +18,7 @@ function SearchResult({ listing }) {
     <div className="search-result-content">
       <h3>{listing.title}</h3>
       <p className="search-result-facts"><strong>{formatPrice(listing.price)}</strong><span>· {listing.areaM2} m²</span></p>
-      <p className="search-result-location">{listing.address}, {listing.district}</p>
+      <p className="search-result-location">{listingLocation(listing)}</p>
       <Link className="primary-button search-result-link" to={`/listings/${listing.id}`}>Xem chi tiết</Link>
     </div>
   </article>;
@@ -80,6 +82,7 @@ export default function SearchPage() {
   }, [runSearch]);
 
   function updateCriteria(field, value) { setCriteria(current => ({ ...current, [field]: value })); }
+  function selectProvince(code) { setCriteria(current => ({ ...current, provinceCode: code, wardCode: '' })); }
   function toggleAmenity(id, checked) {
     setCriteria(current => ({ ...current, amenityIds: checked
       ? [...new Set([...current.amenityIds, id])]
@@ -87,6 +90,7 @@ export default function SearchPage() {
   }
   function clearFilters() { setCriteria(emptyCriteria); runSearch(emptyCriteria); }
   const pageCount = pagination ? Math.max(1, Math.ceil(pagination.total / pagination.limit)) : 1;
+  const selectedProvince = provinces.find(province => province.code === criteria.provinceCode);
 
   return <ListingLayout><main className="search-page" aria-label="Tìm kiếm phòng">
     <header className="search-heading"><h1>Tìm phòng phù hợp</h1><p>Lọc theo khu vực, giá và tiện ích để tìm phòng ưng ý.</p></header>
@@ -95,9 +99,12 @@ export default function SearchPage() {
         <div className="search-filter-heading"><h2>Bộ lọc</h2></div>
         {loadingOptions && <p role="status">Đang tải bộ lọc...</p>}
         {optionsError && <p className="message error-message" role="alert">{optionsError} <button type="button" onClick={() => window.location.reload()}>Tải lại trang</button></p>}
-        <label className="search-field"><span>Từ khóa</span><input type="search" value={criteria.keyword} onChange={event => updateCriteria('keyword', event.target.value)} placeholder="Tên đường, quận..." /></label>
-        <label className="search-field"><span>Khu vực</span><select value={criteria.district} onChange={event => updateCriteria('district', event.target.value)}>
-          <option value="">Tất cả khu vực</option>{options.districts.map(district => <option key={district} value={district}>{district}</option>)}
+        <label className="search-field"><span>Từ khóa</span><input type="search" value={criteria.keyword} onChange={event => updateCriteria('keyword', event.target.value)} placeholder="Tên phòng, tên đường..." /></label>
+        <label className="search-field"><span>Tỉnh/Thành phố</span><select value={criteria.provinceCode} onChange={event => selectProvince(event.target.value)}>
+          <option value="">Tất cả Tỉnh/Thành phố</option>{provinces.map(province => <option key={province.code} value={province.code}>{province.name}</option>)}
+        </select></label>
+        <label className="search-field"><span>Phường/Xã</span><select value={criteria.wardCode} disabled={!selectedProvince} onChange={event => updateCriteria('wardCode', event.target.value)}>
+          <option value="">Tất cả Phường/Xã</option>{selectedProvince?.wards.map(ward => <option key={ward.code} value={ward.code}>{ward.name}</option>)}
         </select></label>
         <label className="search-field"><span>Giá tối đa (VND/tháng)</span><input type="number" min="1" step="1" inputMode="numeric" value={criteria.maxPrice} onChange={event => updateCriteria('maxPrice', event.target.value)} /></label>
         <label className="search-field"><span>Loại phòng</span><select value={criteria.roomType} onChange={event => updateCriteria('roomType', event.target.value)}>
