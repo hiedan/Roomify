@@ -1,7 +1,7 @@
 jest.mock('../src/db', () => ({ query: jest.fn() }));
 
 const { query } = require('../src/db');
-const { searchListings } = require('../src/services/listingSearchService');
+const { getListingFilterOptions, searchListings } = require('../src/services/listingSearchService');
 
 function listingRow(overrides = {}) {
   return {
@@ -25,6 +25,18 @@ function listingRow(overrides = {}) {
 
 beforeEach(() => {
   query.mockReset();
+});
+
+test('returns the full administrative catalog and seeded amenities even without approved listings', async () => {
+  query.mockResolvedValueOnce({ rows: [] })
+    .mockResolvedValueOnce({ rows: [] })
+    .mockResolvedValueOnce({ rows: [{ id: 1, name: 'Wifi' }] });
+
+  const options = await getListingFilterOptions();
+  expect(options.provinces).toHaveLength(34);
+  expect(options.provinces.reduce((sum, province) => sum + province.wards.length, 0)).toBe(3321);
+  expect(options.amenities).toEqual([{ id: '1', name: 'Wifi' }]);
+  expect(query.mock.calls[2][0]).toBe('SELECT id, name FROM amenities ORDER BY name, id');
 });
 
 test('searches title, address, and district with normalized literal keyword and approved-only default results', async () => {
@@ -54,6 +66,8 @@ test('searches title, address, and district with normalized literal keyword and 
       areaM2: 24,
       address: '12 Sample Street',
       district: 'Bình Thạnh',
+      provinceCode: null,
+      wardCode: null,
       roomType: { code: 'private_room', name: 'Phòng trọ riêng' },
       coverImageUrl: 'https://example.test/cover.jpg',
       amenities: [{ id: '1', name: 'Wifi' }],
@@ -64,6 +78,23 @@ test('searches title, address, and district with normalized literal keyword and 
   expect(JSON.stringify(result)).not.toContain('private-owner-id');
   expect(JSON.stringify(result)).not.toContain('private-reviewer-id');
   expect(JSON.stringify(result)).not.toContain('private moderation data');
+});
+
+test('filters by valid post-merger province and ward codes', async () => {
+  query.mockResolvedValueOnce({ rows: [{ total: '1' }] })
+    .mockResolvedValueOnce({ rows: [listingRow({ province_code: '01', ward_code: '00004' })] });
+
+  const result = await searchListings({ provinceCode: '01', wardCode: '00004' });
+  expect(query.mock.calls[0][0]).toContain('l.province_code = $1');
+  expect(query.mock.calls[0][0]).toContain('l.ward_code = $2');
+  expect(query.mock.calls[0][1]).toEqual(['01', '00004']);
+  expect(result.listings[0]).toMatchObject({ provinceCode: '01', wardCode: '00004' });
+
+  await expect(searchListings({ wardCode: '00004' })).rejects.toBeTruthy();
+  await expect(searchListings({ provinceCode: '01', wardCode: '99999' }))
+    .rejects.toMatchObject({ status: 400, code: 'VALIDATION_ERROR' });
+  await expect(searchListings({ provinceCode: '99' }))
+    .rejects.toMatchObject({ status: 400, code: 'VALIDATION_ERROR' });
 });
 
 test('district filtering validates an exact approved district and applies it to the result query', async () => {

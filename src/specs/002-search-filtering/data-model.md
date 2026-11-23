@@ -63,6 +63,8 @@ Existing persistent entity in `listings`; public search adds a room-type relatio
 | `area_m2` | Existing positive real | Square meters; selected lower and upper bounds are inclusive. |
 | `address` | Existing `varchar(255)` | Public address and keyword-search field. |
 | `district` | Existing `varchar(100)` | Public location and keyword-search field; exact district filter. |
+| `province_code` | Nullable `varchar(2)` | Verified post-merger province/city code. Null on unclassified legacy listings. |
+| `ward_code` | Nullable `varchar(5)` | Verified ward/commune/special-zone code; requires `province_code`. |
 | `status` | Existing status | Only `approved` rows can be returned publicly. |
 | `created_at` | Existing timestamp | Sort descending, followed by `id` descending. |
 | `room_type_id` | New nullable integer FK | References `room_types.id` for classified listings. Existing rows whose type cannot be determined reliably remain null; never assign an inferred category. |

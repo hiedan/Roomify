@@ -84,6 +84,23 @@ test('anonymous district search matches the exact district and ignores non-appro
   expect(response.body.pagination.total).toBe(1);
 });
 
+test('province and ward filters match verified codes and exclude unclassified listings', async () => {
+  await query('UPDATE listings SET province_code = $1, ward_code = $2 WHERE id = $3',
+    ['01', '00004', listings[0]]);
+
+  const matching = await api.get('/api/v1/listings').query({ keyword, provinceCode: '01', wardCode: '00004' });
+  expect(matching.status).toBe(200);
+  expect(matching.body.data).toHaveLength(1);
+  expect(matching.body.data[0]).toMatchObject({ provinceCode: '01', wardCode: '00004' });
+
+  const otherProvince = await api.get('/api/v1/listings').query({ keyword, provinceCode: '79' });
+  expect(otherProvince.status).toBe(200);
+  expect(otherProvince.body.data).toHaveLength(0);
+
+  const invalidPair = await api.get('/api/v1/listings').query({ provinceCode: '79', wardCode: '00004' });
+  expectError(invalidPair, 400, 'VALIDATION_ERROR');
+});
+
 test('invalid and unsupported query fields return a validation error without echoing values', async () => {
   const malformed = await api.get('/api/v1/listings').query({ page: '0' });
   expectError(malformed, 400, 'VALIDATION_ERROR');
@@ -104,6 +121,9 @@ test('public filter options require no authentication and do not expose listing 
   expect(response.status).toBe(200);
   expect(response.body.success).toBe(true);
   expect(response.body.data.districts).toContain(district);
+  expect(response.body.data.provinces).toHaveLength(34);
+  expect(response.body.data.provinces.find(item => item.code === '01').wards)
+    .toContainEqual({ code: '00004', name: 'Phường Ba Đình' });
   expect(response.body.data.roomTypes.map(item => item.code)).toEqual(expect.arrayContaining([
     'apartment', 'private_room', 'shared_room', 'studio',
   ]));
@@ -112,6 +132,7 @@ test('public filter options require no authentication and do not expose listing 
     id: String(amenity.rows[0].id),
     name: 'Wifi',
   });
+  expect(response.body.data.amenities).toHaveLength(8);
   expect(response.body.data).not.toHaveProperty('owners');
 });
 

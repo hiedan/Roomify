@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ListingLayout from '../components/ListingLayout';
 import ListingPhoto from '../components/ListingPhoto';
+import { listingLocation } from '../components/listingLocation';
 import { getListingDetail } from '../api/listingApi';
 
 const formatPrice = value => `${new Intl.NumberFormat('vi-VN').format(value)} đ/tháng`;
@@ -46,7 +47,7 @@ export default function ListingDetailPage() {
         <div className="listing-detail-main">
           <h1>{listing.title}</h1>
           <p className="listing-detail-price"><strong>{formatPrice(listing.price)}</strong><span>{listing.areaM2} m²</span></p>
-          <p className="listing-detail-address">{listing.address}, {listing.district}</p>
+          <p className="listing-detail-address">{listingLocation(listing)}</p>
           <p className="listing-detail-type">{listing.roomType?.name || 'Chưa phân loại'}</p>
           <section className="listing-detail-section"><h2>Mô tả</h2><p>{listing.description || 'Chưa có mô tả.'}</p></section>
           <section className="listing-detail-section"><h2>Tiện ích</h2>

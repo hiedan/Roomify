@@ -19,6 +19,7 @@ Returns the filter choices available for public approved listings.
   "success": true,
   "data": {
     "districts": ["Bình Thạnh", "Thủ Đức"],
+    "provinces": [{ "code": "01", "name": "Thành phố Hà Nội", "wards": [{ "code": "00004", "name": "Phường Ba Đình" }] }],
     "roomTypes": [
       { "code": "private_room", "name": "Phòng trọ riêng" },
       { "code": "shared_room", "name": "Phòng ở ghép" },
@@ -32,7 +33,7 @@ Returns the filter choices available for public approved listings.
 }
 ```
 
-Districts are distinct values from approved listings, sorted by display name. Room types are active catalog entries. Amenities are supported amenity entries used by approved listings. The room-type values above are the confirmed initial catalog; do not add a whole-house category in this version.
+Districts are distinct values from approved listings, sorted by display name. `provinces` is the full post-merger administrative catalog, independent of listing count; each province contains its wards, communes and special zones. Room types are active catalog entries. Amenities are all entries in the seeded amenity catalog, including entries not yet used by approved listings. The room-type values above are the confirmed initial catalog; do not add a whole-house category in this version.
 
 ## `GET /listings`
 
@@ -44,6 +45,8 @@ Returns one page of approved listing summaries. Repeated `amenityIds` parameters
 |---|---|---:|---|
 | `keyword` | string | No | Trim and normalize repeated spaces; match title, address, or district. |
 | `district` | string | No | Must match a supported district value. |
+| `provinceCode` | 2-digit string | No | Must match a catalog province code; leading zeroes are significant. |
+| `wardCode` | 5-digit string | No | Requires `provinceCode` and must belong to that province. Includes communes and special zones. |
 | `roomType` | string | No | Must match an active room-type catalog code. |
 | `maxPrice` | positive integer | No | Inclusive VND/month maximum. |
 | `minAreaM2` | positive number | No | Inclusive lower area bound. |
@@ -66,6 +69,8 @@ Unknown query parameters, malformed values, unsupported filter values, and `minA
       "areaM2": 24,
       "address": "Example street",
       "district": "Bình Thạnh",
+      "provinceCode": null,
+      "wardCode": null,
       "roomType": { "code": "private_room", "name": "Phòng trọ riêng" },
       "coverImageUrl": null,
       "amenities": [{ "id": "1", "name": "Wifi" }],
@@ -77,6 +82,8 @@ Unknown query parameters, malformed values, unsupported filter values, and `minA
 ```
 
 Other example values are illustrative. `roomType` is null only for an existing listing that cannot be reliably classified; its card displays “Chưa phân loại”, and it is excluded whenever a room-type filter is selected. Return only explicitly selected public fields, with no owner or account details. Results are ordered by `created_at DESC, id DESC`. An empty match is `200` with an empty `data` array and `pagination.total` equal to zero.
+
+`provinceCode` and `wardCode` are null for legacy listings until their post-merger location is verified and assigned. Searches by these codes exclude unclassified legacy listings; the existing district query remains available for compatibility.
 
 ## `GET /listings/{id}`
 

@@ -33,7 +33,7 @@ export async function getListingFilterOptions(signal) {
 
 export async function searchListings(criteria, signal) {
   const params = new URLSearchParams();
-  for (const field of ['keyword', 'district', 'roomType', 'maxPrice', 'minAreaM2', 'maxAreaM2', 'page']) {
+  for (const field of ['keyword', 'district', 'provinceCode', 'wardCode', 'roomType', 'maxPrice', 'minAreaM2', 'maxAreaM2', 'page']) {
     const value = criteria[field];
     if (value !== undefined && value !== null && String(value).trim() !== '') {
       params.set(field, String(value).trim());
