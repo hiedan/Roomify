@@ -13,8 +13,9 @@
 - Node.js 18+ and npm.
 - Backend and frontend dependencies installed in their respective directories.
 - A configured Roomify application PostgreSQL project and a separate, explicitly configured Roomify-Test PostgreSQL project, following the root [database setup instructions](../../../README.md).
-- Synthetic test records only. Do not use the test project for data that must be preserved.
+- Synthetic test records only. Include approved records with verified province/ward codes when testing those filters; do not use the test project for data that must be preserved.
 - Use the confirmed room-type codes from [spec.md](./spec.md). Keep existing rows with no reliable type unclassified; do not invent a backfill.
+- Keep province/ward values null unless they are verified against `shared/vietnam-administrative-units.json`. The current listing create/update API does not populate these fields, so assign codes explicitly in isolated test fixtures when required.
 
 Keep database URLs and credentials in the local backend environment configuration; never put secrets in frontend variables, source files, or this guide.
 
@@ -29,7 +30,7 @@ npm.cmd run migrate:test
 npm.cmd run db:check:test
 ```
 
-Run these only after verifying that application and test URLs point to different intended projects. The migration must seed only the four confirmed room types and leave unclassifiable legacy listings null.
+Run these only after verifying that application and test URLs point to different intended projects. The migrations seed only the four confirmed room types and add nullable province/ward columns; they must not invent room types or location codes for existing listings.
 
 ### T005 execution status
 
@@ -50,7 +51,7 @@ Then run the integration suite against the configured Roomify-Test database:
 npm.cmd test -- --runInBand
 ```
 
-The search API tests should verify anonymous access, approved-only visibility, all filters together, all-selected-amenities matching, inclusive boundaries, malformed/unsupported criteria, deterministic paging, public-field privacy, detail visibility, empty results, and database/service errors.
+The search API tests should verify anonymous access, approved-only visibility, keyword/district matching, province/ward filters (including parent-child validation), all filters together, all-selected-amenities matching, inclusive boundaries, malformed/unsupported criteria, deterministic paging, public-field privacy, detail visibility, empty results, and database/service errors.
 
 ### Backend verification on 2026-11-21
 
@@ -74,7 +75,7 @@ Verify a visitor can open search without signing in, use keyboard-accessible fil
 
 ## Verify the Performance Target
 
-Prepare 1,000 synthetic approved listings with varied districts, confirmed room types, prices, areas, images, and amenities in the isolated verification environment. Include pending and rejected control records to verify they never appear. Measure end-to-end time from submitting a valid search until the first result page is displayed for 100 documented queries; report the environment and observed percentile. The target is at least 95% of searches within 3 seconds.
+Prepare 1,000 synthetic approved listings with varied districts, verified province/ward codes, confirmed room types, prices, areas, images, and amenities in the isolated verification environment. Include pending and rejected control records to verify they never appear. Measure end-to-end time from submitting a valid search until the first result page is displayed for 100 documented queries; report the environment and observed percentile. The target is at least 95% of searches within 3 seconds.
 
 For usability, recruit 10 participants who have not implemented this feature. Give each the same task: “Find a room in Bình Thạnh, type Studio / căn hộ mini, at or below 5,000,000 VND/month, at least 20 m², and with Wi-Fi.” At least 9 of 10 must find a matching approved listing within 2 minutes without assistance. Record completion count/time and participant feedback using synthetic listings only.
 
@@ -94,3 +95,27 @@ Verify keyboard-only operation and absence of horizontal page scrolling at viewp
 - Environment: Windows, Node.js v24.15.0, Playwright 1.64.1 with Chromium, Vite frontend, and the isolated Roomify-Test backend. Before browser execution, `node scripts/database.js check --test` from `backend/` passed for project ref `seggbbbuspquwxeifsab` and confirmed that migration `1700000004000_search_room_types` is present. The configured test-target guard and single-worker Playwright configuration kept the test run on Roomify-Test; no application-database migration was performed.
 - From `frontend/`, `npm.cmd run build` passed. `npm.cmd run test:e2e` passed **51/51 tests** in approximately 4.1 minutes, including the two auth-session cases that failed in the 2026-11-20 run.
 - The search browser tests cover keyboard navigation to a result detail and absence of horizontal page scrolling at 320 and 1280 CSS-pixel widths. Their search API responses are mocked. The auth-session suite includes real backend/database flows on Roomify-Test. This pass closes T026 but does not establish real search UI/API/database integration or the SC-003 performance target; T027 and T028 remain open.
+
+### Cross-artifact review on 2026-11-25 — T028
+
+- The user-facing search controls are keyword, province, ward, room type, maximum price, area bounds, and amenities. District text is searchable by keyword. The API retains an exact `district` query parameter for compatibility, but the current UI has no separate district selector.
+- The spec, plan, data model, and API contract now describe the same province/ward filters, shared catalog, nullable location columns, and district behavior.
+- The listing create/update API does not populate `province_code` or `ward_code`. Search tests and the performance fixture must assign verified codes explicitly; ordinary new listings remain unclassified for these filters until a trusted write path is added.
+- T028 cross-artifact review is complete. The performance result is recorded under T027 below; neither review proves that province/ward filters find newly created listings.
+
+### SC-003 performance record — T027
+
+The benchmark used the real search page, API, backend, and isolated Roomify-Test database. Five warm-up searches were excluded, followed by 100 measured searches across four verified province/ward pairs; each query matched 250 approved listings. Four pending and four rejected controls were included and did not appear in approved search results.
+
+| Measurement field | Result |
+|---|---|
+| Date and test environment (OS, Node.js, database/test project) | 2026-11-25; Windows `10.0.26300`; Node.js `v26.13.0`; Chromium `156.0.8078.4`; Roomify-Test Supabase project `seggbbbuspquwxeifsab` (Session mode); viewport 1280 × 800 CSS pixels |
+| Synthetic approved listings (required: 1,000) | 1,000; plus 4 pending and 4 rejected controls |
+| Valid search queries (required: 100) | 100 measured after 5 warm-ups; keyword plus province and ward filters, with 250 matching approved listings per query |
+| Observed search-to-display time | p50: 666.1 ms; p95: 735.6 ms; p99: 744.7 ms; minimum: 557.0 ms; maximum: 754.9 ms |
+| Searches displayed within 3 seconds (count and percentage) | 100/100 (100%) |
+| SC-003 outcome (pass only if at least 95% are within 3 seconds) | **PASS** |
+
+The temporary Playwright benchmark ran with one worker using the actual Chromium UI against the test backend; timing started immediately before submitting each query and ended after the first 12 result cards and matching total were displayed. The pre- and post-run read-only database checks passed. The post-run cleanup check found zero listings with the benchmark marker and zero remaining fixture owners. The database check's `pg_stat_ssl` field reported `tls: false` for the PostgreSQL-side session; the application's database client is separately configured to require verified TLS, so that server-side field does not report the client-to-pooler TLS state.
+
+SC-004's 10-participant usability study also has no recorded result in this guide.

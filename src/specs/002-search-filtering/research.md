@@ -51,7 +51,7 @@ The existing frontend `apiRequest` helper returns only the response `data` prope
 
 ## Decision 5: Keep filter choices and public result data aligned with approved listings
 
-**Decision**: Build districts from approved listings and provide active catalog room types and amenities through a public filter-options response. Validate IDs/codes against supported values. Unsupported input returns a validation error rather than dropping the filter.
+**Decision**: The public filter-options response provides districts from approved listings, the shared province/ward catalog, active room types, and amenities. The current UI uses province/ward selectors and searches district text through `keyword`; the API also retains an exact district filter for compatibility. Validate IDs/codes against supported values. Unsupported input returns a validation error rather than dropping the filter.
 
 **Rationale**: The schema already contains districts, amenities, and listing-amenity associations. One options response supports usable controls without hardcoding DB identifiers in the frontend.
 
@@ -68,7 +68,17 @@ The existing frontend `apiRequest` helper returns only the response `data` prope
 **Alternatives considered**:
 - Adding a new test runner or migration system: rejected because existing project tools cover the API, database, and browser layers.
 
-## Repository Evidence
+## Decision 7: Use the shared post-merger administrative-unit catalog
+
+**Decision**: The search UI reads province and ward choices from `shared/vietnam-administrative-units.json`. The API validates `provinceCode` and `wardCode` against the same catalog; a ward requires its parent province. Listings store nullable `province_code` and `ward_code` values, and unverified legacy records remain unclassified.
+
+**UI/API distinction**: The current UI has province and ward selectors and searches district text through `keyword`. The API additionally retains an exact `district` query parameter for compatibility; it is not a separate UI control.
+
+**Implementation limitation**: The current landlord listing create/update API does not write province/ward codes. Search fixtures must assign verified codes explicitly until a trusted write path is added.
+
+**Rationale**: The post-merger catalog is shared by the frontend and backend, preserving leading-zero codes and consistent province/ward relationships without guessing historical district mappings.
+
+## Repository Evidence at Initial Planning (2026-11-12)
 
 - `backend/src/app.js` mounts listing routes under `/api/v1/listings`.
 - `backend/src/routes/listingRoutes.js` currently provides only an authenticated landlord delete route.

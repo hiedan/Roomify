@@ -1,85 +1,54 @@
 # Roomify
 
-Roomify is a full-stack rental/boarding-house platform focused on User Authentication and Role Management.
-This project implements the end-to-end feature set across frontend, backend, and database, including registration, login, JWT-based session handling, protected routes, and admin role management.
+Roomify is a full-stack room-rental platform. For PA4, Group 13 implemented two end-to-end functional groups:
 
-## Submission scope
+1. **Search and Filtering (002):** Public search and browsing of approved listings, with filters for keyword, administrative location, room type, price, area, and amenities.
+2. **Listing Management (003):** Landlords can create, view, edit, and delete their listings, including selecting a location on a map. Editing a listing that requires review returns it to moderation.
 
-Submit the following folders/files only:
+Authentication and role-based access are part of the existing platform and protect listing-management operations.
 
-- backend/
-- frontend/
-- src/
-- README.md
+## PA4 demo video
 
-Do not include in the final submission package:
+Add the final YouTube URL before submission:
 
-- backend/node_modules/
-- frontend/node_modules/
-- frontend/dist/
-- backend/dist/
-- .env and any environment secret files
-- any generated cache or temporary build directories
-- screenshots, logs, and local DB artifacts not required for source review
+- **Demo video:** `[PASTE YOUTUBE URL HERE]`
 
-## Implemented feature
+The narrated demo should cover both PA4 functional groups, including the search/filter flow and the landlord listing lifecycle.
 
-- User registration with email and password validation
-- User login with JWT authentication
-- Session persistence and protected routes
-- Role-based access: tenant, landlord, admin
-- Admin dashboard to update user role and active status
-- Frontend screens for auth and dashboard flows
-- PostgreSQL persistence with real API integration
+## Technology
 
-## Tech stack
-
-- Frontend: React + Vite
-- Backend: Node.js + Express
-- Database: PostgreSQL
-- Auth: JWT + bcrypt
+- **Frontend:** React 18, React Router, Vite, Leaflet
+- **Backend:** Node.js, Express, Zod
+- **Database:** PostgreSQL with PostGIS, hosted on Supabase
+- **Maps and geocoding:** OpenStreetMap tiles and the Nominatim API
+- **Verification:** Jest, Supertest, and Playwright
 
 ## Project structure
 
-- backend/: Express API, controllers, services, routes, migrations
-- frontend/: Vite React app and UI screens
-- src/specs/001-user-auth/: spec, plan, tasks, quickstart, and API contracts
+- `backend/` — REST API, database migrations, and backend tests
+- `frontend/` — React application and browser-based end-to-end tests
+- `shared/` — shared administrative-unit data used by search filters and listing-location display
+- `src/specs/002-search-filtering/` — Search and Filtering Spec Kit artifacts
+- `src/specs/003-listing-management/` — Listing Management Spec Kit artifacts
+- `docs/analysis-and-design/` — project architecture and ERD documentation
 
-## Spec kit artifacts
+The `shared/` directory is required by both the frontend and backend. Keep it in the source package.
 
-- [src/specs/001-user-auth/spec.md](src/specs/001-user-auth/spec.md)
-- [src/specs/001-user-auth/plan.md](src/specs/001-user-auth/plan.md)
-- [src/specs/001-user-auth/tasks.md](src/specs/001-user-auth/tasks.md)
-- [src/specs/001-user-auth/quickstart.md](src/specs/001-user-auth/quickstart.md)
-- [src/specs/001-user-auth/contracts/auth-api.md](src/specs/001-user-auth/contracts/auth-api.md)
-- [src/specs/001-user-auth/data-model.md](src/specs/001-user-auth/data-model.md)
+## Run locally
 
-## Demo video
-
-Add the final YouTube link here before submission:
-
-- Demo video: https://youtube.com/...
-
-The video should show:
-
-1. Register a new user
-2. Login as a tenant
-3. View the tenant dashboard
-4. Login as admin
-5. Update a user role or status from admin screen
-6. Confirm role-based UI changes
-
-## Local run
+Prerequisites: a supported Node.js version and a PostgreSQL/Supabase database configured for the backend.
 
 Backend:
 
 ```powershell
 cd backend
 npm install
+# Configure the required database and application environment variables locally.
+npm run migrate
 npm run dev
 ```
 
-Frontend:
+Frontend, in a separate terminal:
 
 ```powershell
 cd frontend
@@ -87,26 +56,12 @@ npm install
 npm run dev
 ```
 
-The frontend is expected to run on http://localhost:5173 and the backend on http://localhost:3000.
+The Vite development server runs at `http://localhost:5173` and proxies `/api/v1` requests to the backend at `http://127.0.0.1:3000` by default.
 
-## Notes for final submission
+## PA4 source and documentation packaging
 
-- Keep only source code and required documentation.
-- Remove node_modules and generated build directories before packaging.
-- Do not submit secret keys or `.env` files.
-- Ensure the project still runs after cleanup.
-- Include the demo video link in this README before final upload.
+Include the complete application source, the Spec Kit artifacts for functional groups 002 and 003, and the required PA4 documents and evidence. Exclude dependency folders, generated build/cache files, local database artifacts, `.env` files, and any file containing credentials or other secrets. Use placeholders for configuration values in the submitted copy.
 
-## Team
+## Group
 
-This project is part of Roomify, developed by Group 13 with five members:
-
-| No. | Member | Responsibility |
-|---|---|---|
-| 1 | Đặng Hiển | Functional Group E: Backend, database, authentication logic, and integration |
-| 2 | Nguyễn Hữu Nghĩa | Functional Group E: Frontend, role-based UI, Spec Kit artifacts, and integration |
-| 3 | Đỗ Quốc Đại | Group member – contributes to other project assignments |
-| 4 | Từ Thái Hưng | Group member – contributes to other project assignments |
-| 5 | Võ Minh Khang | Group member – contributes to other project assignments |
-
-**Note:** All five members belong to Group 13. However, Functional Group E (User Authentication and Role Management) was implemented by Đặng Hiển and Nguyễn Hữu Nghĩa.
+**Group 13.** See the PA4 reports and Jira evidence for member assignments and contributions.
