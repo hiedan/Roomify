@@ -45,7 +45,7 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 - [X] T001 Align API contract with camelCase JSON fields (`areaM2`, `roomTypeId`, `amenityIds`, `imageUrls`, `ownerId`, `rejectReason`, `coverImageUrl`, `isCover`, `sortOrder`, `createdAt`), PostGIS spatial point syntax `ST_SetSRID(ST_MakePoint($lng, $lat), 4326)::geography`, 4 room types, and image constraints in `src/specs/003-listing-management/contracts/listing-management-api.md` (Owner: Từ Thái Hưng & Đỗ Quốc Đại).
 - [X] T002 [P] Create backend test fixtures and seed helpers for authenticated landlords, synthetic listings in each status (`pending`, `approved`, `rejected`), and image URLs in `backend/tests/fixtures/listingFixtures.js` (Owner: Từ Thái Hưng).
-- [ ] T003 [P] Initialize frontend API client module stub with standard response envelope handling in `frontend/src/api/listingManagementApi.js` (Owner: Đỗ Quốc Đại).
+- [X] T003 [P] Initialize frontend API client module stub with standard response envelope handling in `frontend/src/api/listingManagementApi.js` (Owner: Đỗ Quốc Đại).
 
 ---
 
@@ -56,7 +56,7 @@ Each task strictly adheres to the Spec-Kit checklist format:
 **Purpose**: Core backend validation schemas, Express route structure, and frontend landlord routing that all user stories depend upon.
 
 - [X] T004 Implement Zod validation schemas (`createListingSchema`, `updateListingSchema`, `queryMineSchema`) with `.strict()` using camelCase property keys in `backend/src/services/listingService.js` and prepare Express route ordering in `backend/src/routes/listingRoutes.js` ensuring `GET /mine` and `GET /mine/:id` are declared above `GET /:id` (Owner: Từ Thái Hưng; depends on T001).
-- [ ] T005 [P] Setup landlord private route guards and navigation links for `/landlord/listings`, `/landlord/listings/create`, and `/landlord/listings/:id/edit` in `frontend/src/App.jsx` (Owner: Đỗ Quốc Đại; depends on T003).
+- [X] T005 [P] Setup landlord private route guards and navigation links for `/landlord/listings`, `/landlord/listings/create`, and `/landlord/listings/:id/edit` in `frontend/src/App.jsx` (Owner: Đỗ Quốc Đại; depends on T003).
 
 **Checkpoint**: Foundation ready. User story development can proceed in parallel across backend and frontend.
 
@@ -79,8 +79,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
-- [ ] T010 [P] [US1] Add Playwright E2E tests for the listing creation workflow in `frontend/e2e/landlord-create-listing.spec.js` covering field validation errors, successful submission, and redirection to My Listings.
-- [ ] T011 [US1] Add `createListing(data)` API method in `frontend/src/api/listingManagementApi.js` and build the Post Listing page with inputs for title, description, price, areaM2, roomTypeId, amenities checklist, and dynamic image URL inputs (1 to 10 photos) in `frontend/src/pages/PostListingPage.jsx` (depends on T010).
+- [X] T010 [P] [US1] Add Playwright E2E tests for the listing creation workflow in `frontend/e2e/landlord-create-listing.spec.js` covering field validation errors, successful submission, and redirection to My Listings.
+- [X] T011 [US1] Add `createListing(data)` API method in `frontend/src/api/listingManagementApi.js` and build the Post Listing page with inputs for title, description, price, areaM2, roomTypeId, amenities checklist, and dynamic image URL inputs (1 to 10 photos) in `frontend/src/pages/PostListingPage.jsx` (depends on T010).
 
 **Checkpoint**: User Story 1 (MVP) complete and independently testable end-to-end.
 
@@ -100,8 +100,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
-- [ ] T013 [P] [US2] Add Playwright E2E tests for the map picker modal in `frontend/e2e/landlord-map-picker.spec.js` validating modal opening, address search query, pin dragging, coordinate updating, and confirmation passing data to form fields.
-- [ ] T014 [US2] Implement `MapLocationPicker.jsx` modal component in `frontend/src/components/MapLocationPicker.jsx` using Google Maps JavaScript API (or Leaflet), support address autocomplete, draggable marker pin, reverse geocoding, and integrate with `frontend/src/pages/PostListingPage.jsx` and `frontend/src/pages/EditListingPage.jsx` (depends on T013).
+- [X] T013 [P] [US2] Add Playwright E2E tests for the map picker modal in `frontend/e2e/landlord-map-picker.spec.js` validating modal opening, address search query, pin dragging, coordinate updating, and confirmation passing data to form fields.
+- [X] T014 [US2] Implement `MapLocationPicker.jsx` modal component in `frontend/src/components/MapLocationPicker.jsx` using Google Maps JavaScript API (or Leaflet), support address autocomplete, draggable marker pin, reverse geocoding, and integrate with `frontend/src/pages/PostListingPage.jsx` and `frontend/src/pages/EditListingPage.jsx` (depends on T013).
 
 **Checkpoint**: User Story 2 complete. Landlords can visually select map locations and submit listings with verified PostGIS coordinates.
 
@@ -124,8 +124,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
-- [ ] T019 [P] [US3] Add Playwright E2E tests for the "My Listings" management screen in `frontend/e2e/landlord-my-listings.spec.js` testing status tab switches, summary counter displays, empty states, and rejection note banners.
-- [ ] T020 [US3] Add `getMyListings(status)` and `getMyListingById(id)` API methods in `frontend/src/api/listingManagementApi.js` and build the My Listings dashboard with status filter tabs, summary badges, listing cards, rejection note alerts, and empty state CTA in `frontend/src/pages/MyListingsPage.jsx` (depends on T019).
+- [X] T019 [P] [US3] Add Playwright E2E tests for the "My Listings" management screen in `frontend/e2e/landlord-my-listings.spec.js` testing status tab switches, summary counter displays, empty states, and rejection note banners.
+- [X] T020 [US3] Add `getMyListings(status)` and `getMyListingById(id)` API methods in `frontend/src/api/listingManagementApi.js` and build the My Listings dashboard with status filter tabs, summary badges, listing cards, rejection note alerts, and empty state CTA in `frontend/src/pages/MyListingsPage.jsx` (depends on T019).
 
 **Checkpoint**: User Story 3 complete. Landlords have full transparency into their portfolio and moderation feedback.
 
@@ -148,8 +148,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
-- [ ] T025 [P] [US4] Add Playwright E2E tests for listing modification in `frontend/e2e/landlord-edit-listing.spec.js` covering data pre-population from `getMyListingById`, re-moderation notice banner, form editing, and successful update redirect.
-- [ ] T026 [US4] Add `updateListing(id, data)` API method in `frontend/src/api/listingManagementApi.js` and build the Edit Listing page in `frontend/src/pages/EditListingPage.jsx` loading owned listing data via `getMyListingById(id)`, displaying re-moderation warning alert, and integrating `MapLocationPicker.jsx` (depends on T025).
+- [X] T025 [P] [US4] Add Playwright E2E tests for listing modification in `frontend/e2e/landlord-edit-listing.spec.js` covering data pre-population from `getMyListingById`, re-moderation notice banner, form editing, and successful update redirect.
+- [X] T026 [US4] Add `updateListing(id, data)` API method in `frontend/src/api/listingManagementApi.js` and build the Edit Listing page in `frontend/src/pages/EditListingPage.jsx` loading owned listing data via `getMyListingById(id)`, displaying re-moderation warning alert, and integrating `MapLocationPicker.jsx` (depends on T025).
 
 **Checkpoint**: User Story 4 complete. Landlords can modify listings with guaranteed administrative re-moderation.
 
@@ -169,8 +169,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 
 ### Frontend Implementation & Verification (Owner: Đỗ Quốc Đại)
 
-- [ ] T028 [P] [US5] Add Playwright E2E tests for the deletion flow in `frontend/e2e/landlord-delete-listing.spec.js` testing confirmation modal display, cancel dismiss, and confirmed deletion removing the item from the UI.
-- [ ] T029 [US5] Add `deleteListing(id)` API method in `frontend/src/api/listingManagementApi.js` and implement `DeleteListingModal.jsx` confirmation dialog in `frontend/src/components/DeleteListingModal.jsx` integrated into `MyListingsPage.jsx` (depends on T028).
+- [X] T028 [P] [US5] Add Playwright E2E tests for the deletion flow in `frontend/e2e/landlord-delete-listing.spec.js` testing confirmation modal display, cancel dismiss, and confirmed deletion removing the item from the UI.
+- [X] T029 [US5] Add `deleteListing(id)` API method in `frontend/src/api/listingManagementApi.js` and implement `DeleteListingModal.jsx` confirmation dialog in `frontend/src/components/DeleteListingModal.jsx` integrated into `MyListingsPage.jsx` (depends on T028).
 
 **Checkpoint**: User Story 5 complete. Landlords can permanently remove listings with full cascade cleanup.
 
@@ -183,8 +183,8 @@ Each task strictly adheres to the Spec-Kit checklist format:
 **Purpose**: Execute end-to-end regression testing, performance validation, and documentation updates across both subsystems.
 
 - [X] T030 [P] Execute backend test commands (`npm.cmd run lint`, `npm.cmd run test:unit`, and `npm.cmd test -- --runInBand`) against Roomify-Test and record clean pass results (Owner: Từ Thái Hưng).
-- [ ] T031 [P] Execute full frontend Playwright suite (`npx playwright test frontend/e2e/landlord-*.spec.js`) and verify responsive layout at 320px and 1280px viewports (Owner: Đỗ Quốc Đại).
-- [ ] T032 Complete full lifecycle verification walkthrough (Create listing -> View in My Listings -> Edit -> Verify status reset to Pending -> Delete) per [quickstart.md](./quickstart.md) and confirm zero regressions in `listingSearchService.js` (Owner: Từ Thái Hưng & Đỗ Quốc Đại; depends on T030, T031).
+- [X] T031 [P] Execute full frontend Playwright suite (`npx playwright test frontend/e2e/landlord-*.spec.js`) and verify responsive layout at 320px and 1280px viewports (Owner: Đỗ Quốc Đại).
+- [X] T032 Complete full lifecycle verification walkthrough (Create listing -> View in My Listings -> Edit -> Verify status reset to Pending -> Delete) per [quickstart.md](./quickstart.md) and confirm zero regressions in `listingSearchService.js` (Owner: Từ Thái Hưng & Đỗ Quốc Đại; depends on T030, T031).
 
 ---
 
