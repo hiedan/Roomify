@@ -1,6 +1,7 @@
 erDiagram
   USERS ||--o{ LISTINGS : owns
   USERS ||--o{ LISTINGS : reviews
+  ROOM_TYPES ||--o{ LISTINGS : categorizes
   LISTINGS ||--o{ LISTING_IMAGES : has
   LISTINGS ||--o{ LISTING_AMENITIES : has
   AMENITIES ||--o{ LISTING_AMENITIES : in
@@ -29,6 +30,9 @@ erDiagram
     float area_m2
     string address
     string district
+    string province_code "nullable, verified catalog code"
+    string ward_code "nullable, requires province_code"
+    integer room_type_id FK "nullable for unclassified listings"
     float lat
     float lng
     geography geom
@@ -36,6 +40,12 @@ erDiagram
     string reject_reason
     timestamp reviewed_at
     timestamp created_at
+  }
+  ROOM_TYPES {
+    integer id PK
+    string code UK
+    string name
+    boolean is_active
   }
   LISTING_IMAGES {
     bigint id PK

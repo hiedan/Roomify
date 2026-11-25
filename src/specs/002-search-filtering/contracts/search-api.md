@@ -44,7 +44,7 @@ Returns one page of approved listing summaries. Repeated `amenityIds` parameters
 | Name | Type | Required | Rules |
 |---|---|---:|---|
 | `keyword` | string | No | Trim and normalize repeated spaces; match title, address, or district. |
-| `district` | string | No | Must match a supported district value. |
+| `district` | string | No | Must match a supported district value. Retained as an API filter; the current UI searches district text through `keyword` and has no separate district selector. |
 | `provinceCode` | 2-digit string | No | Must match a catalog province code; leading zeroes are significant. |
 | `wardCode` | 5-digit string | No | Requires `provinceCode` and must belong to that province. Includes communes and special zones. |
 | `roomType` | string | No | Must match an active room-type catalog code. |
@@ -85,6 +85,8 @@ Other example values are illustrative. `roomType` is null only for an existing l
 
 `provinceCode` and `wardCode` are null for legacy listings until their post-merger location is verified and assigned. Searches by these codes exclude unclassified legacy listings; the existing district query remains available for compatibility.
 
+The current landlord listing create/update endpoints do not accept province/ward codes. Until a separate trusted process populates verified values, newly created listings are also unclassified for those filters.
+
 ## `GET /listings/{id}`
 
 Returns a public detail projection only when the listing exists and is administrator-approved. The response includes the public summary fields plus description, ordered public images, and amenity names/IDs. It excludes owner/account details, moderation metadata, and private contact data.
@@ -97,7 +99,7 @@ The detail `data` object contains the summary fields shown above plus `descripti
 
 ## Query and Result Semantics
 
-- All search categories combine with AND semantics; keyword text can match any of title, address, or district.
+- All search categories combine with AND semantics; keyword text can match any of title, address, or district. Province and ward filters match the corresponding verified listing codes.
 - Keyword matching is case-insensitive substring matching; wildcard characters in user input are treated literally.
 - Multiple selected amenities use all-required semantics.
 - Price and area bounds are inclusive.

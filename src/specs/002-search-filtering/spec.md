@@ -17,16 +17,16 @@ This feature helps visitors and tenants find rental rooms matching their needs b
 
 **Performed by:** Nguyễn Hữu Nghĩa | **Reviewed by:** Đỗ Quốc Đại | **Edited by:** Nguyễn Hữu Nghĩa
 
-As a visitor or tenant looking for a room, I want to search using words and a location so that I can find relevant approved listings.
+As a visitor or tenant looking for a room, I want to search using words and filter by province/city and ward/commune/special zone so that I can find relevant approved listings.
 
 **Why this priority**: Finding candidate rooms is the primary purpose of this feature and provides value before advanced filters are applied.
 
-**Independent Test**: Prepare approved listings with different titles, addresses, and districts, plus pending and rejected listings. Search for known terms and locations and verify that matching approved listings appear while nonmatching and non-approved listings do not.
+**Independent Test**: Prepare approved listings with different titles, addresses, districts, and verified province/ward codes, plus pending and rejected listings. Search for known terms and apply province/ward filters; verify that matching approved listings appear while nonmatching and non-approved listings do not.
 
 **Acceptance Scenarios**:
 
 1. **Given** approved listings with different titles, addresses, and districts, **When** a visitor searches for a word appearing in a listing's title, street/address, or district, **Then** the results include matching listings and exclude listings with no match.
-2. **Given** listings in multiple districts, **When** a visitor selects a district, **Then** every result belongs to that district.
+2. **Given** listings with verified codes in multiple provinces and wards, **When** a visitor selects a province and optionally one of its wards, **Then** every result matches the selected administrative codes.
 3. **Given** a visitor enters a keyword with leading, trailing, or repeated spaces, **When** the search is submitted, **Then** insignificant surrounding or repeated spaces do not prevent an otherwise valid match.
 4. **Given** a visitor searches without entering a keyword or selecting filters, **When** the search is submitted, **Then** the system displays approved listings in the default result order.
 
@@ -34,11 +34,11 @@ As a visitor or tenant looking for a room, I want to search using words and a lo
 
 **Performed by:** Nguyễn Hữu Nghĩa | **Reviewed by:** Đỗ Quốc Đại | **Edited by:** Nguyễn Hữu Nghĩa
 
-As a visitor or tenant, I want to combine room type, maximum price, room area, location, and amenity filters so that I can narrow the results to rooms that meet my requirements.
+As a visitor or tenant, I want to combine room type, maximum price, room area, province/ward location, and amenity filters so that I can narrow the results to rooms that meet my requirements.
 
 **Why this priority**: Room seekers commonly need to compare affordability, room size, and essential amenities together.
 
-**Independent Test**: Prepare approved listings that vary by room type, price, area, district, and amenity combinations. Apply one filter at a time and multiple filters together, then verify every result satisfies the selected criteria.
+**Independent Test**: Prepare approved listings that vary by room type, price, area, verified province/ward codes, and amenity combinations. Apply one filter at a time and multiple filters together, then verify every result satisfies the selected criteria.
 
 **Acceptance Scenarios**:
 
@@ -91,7 +91,7 @@ As a visitor or tenant, I want to browse result pages and understand the key fac
 - No maximum price is supplied; price does not restrict the results.
 - A minimum or maximum area is omitted; the remaining area bound still applies.
 - A room's price or area equals the selected maximum or minimum; the boundary listing remains eligible.
-- A filter contains a value not offered by the current district, room-type, or amenity choices; the value is rejected or safely produces no match, never a broader result.
+- A filter contains an unsupported province/ward code, room-type value, or amenity ID; the value is rejected or safely produces no match, never a broader result. A ward code without its parent province is invalid.
 - A listing is pending or rejected; it never appears in search results, regardless of matching criteria.
 - There are no approved listings, even when no filters are selected.
 - A search request fails after the visitor changes criteria; the current criteria remain available for retry, and results from an earlier request are not presented as the new search.
@@ -107,7 +107,7 @@ As a visitor or tenant, I want to browse result pages and understand the key fac
 
 - **FR-001**: The system MUST allow visitors and signed-in tenants to search administrator-approved rental listings without requiring authentication.
 - **FR-002**: The system MUST allow a user to search listing titles, street/address text, and district names using a text keyword.
-- **FR-003**: The system MUST allow a user to filter results by district, room type, maximum monthly price, minimum and maximum room area, and one or more required amenities.
+- **FR-003**: The search interface MUST allow a user to filter results by province/city, optionally by a ward/commune/special zone within that province, room type, maximum monthly price, minimum and maximum room area, and one or more required amenities. Listing district text remains searchable by keyword.
 - **FR-004**: The system MUST treat the maximum monthly price and the minimum and maximum area bounds as inclusive. When both area bounds are supplied, the minimum MUST NOT exceed the maximum.
 - **FR-005**: When multiple filter categories are selected, the system MUST return only listings satisfying every selected category and the keyword, if provided. When multiple amenities are selected, every result MUST contain all selected amenities.
 - **FR-006**: The system MUST include only listings approved by an administrator in search results. Pending and rejected listings MUST NOT be returned.
@@ -126,7 +126,7 @@ As a visitor or tenant, I want to browse result pages and understand the key fac
 
 - **Listing**: A rental room available for discovery, with descriptive information such as title, description, monthly price, room type, area, address, district, images, and moderation state.
 - **Amenity**: A named facility or service associated with a listing, such as Wi-Fi, parking, or air conditioning.
-- **Search criteria**: The optional keyword, district, room type, maximum price, area bounds, and required amenities selected for a search.
+- **Search criteria**: The optional keyword, province code, optional child ward code, room type, maximum price, area bounds, and required amenities selected for a search. District text is searchable by keyword.
 - **Search result**: The approved listings matching the active criteria, presented in a browsable result set.
 
 ## Success Criteria *(mandatory)*
@@ -148,10 +148,10 @@ As a visitor or tenant, I want to browse result pages and understand the key fac
 
 **Performed by:** Nguyễn Hữu Nghĩa | **Reviewed by:** Đỗ Quốc Đại | **Edited by:** Nguyễn Hữu Nghĩa
 
-- The feature is the list/search experience for public room listings. Interactive map browsing, location-radius searches, favorites, messaging, AI recommendations, and listing administration belong to other functional groups.
+- The feature is the list/search experience for public room listings. The current UI provides province and ward filters; district text is matched as part of keyword search. Interactive map browsing, location-radius searches, favorites, messaging, AI recommendations, and listing administration belong to other functional groups.
 - Search is available to visitors and tenants. Landlord management of private or unpublished listings is not part of public search.
 - Search results include listings approved by an administrator. The current listing workflow does not define availability states such as vacant, rented, or hidden; filtering by availability is outside this version.
-- Searchable text comprises listing title, street/address, and district. District, room type, maximum monthly price, room area, and the amenities associated with listings are available as filter criteria.
+- Searchable text comprises listing title, street/address, and district. Province/ward codes, room type, maximum monthly price, room area, and the amenities associated with listings are available as UI filter criteria. The API also retains an optional exact district parameter for compatibility; there is no separate district selector in the current search UI.
 
 ## Post-merger location and amenity catalog update (2026-11-23)
 

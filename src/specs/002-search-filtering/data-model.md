@@ -27,8 +27,10 @@ erDiagram
         real area_m2
         string address
         string district
+        string province_code "nullable until verified"
+        string ward_code "nullable, requires province_code"
+        integer room_type_id FK "nullable for unclassified listings"
         string status
-        integer room_type_id FK "nullable for unclassified legacy listings"
         timestamptz created_at
     }
     LISTING_IMAGES {
@@ -52,7 +54,7 @@ erDiagram
 
 ### Listing
 
-Existing persistent entity in `listings`; public search adds a room-type relationship.
+Existing persistent entity in `listings`; this feature uses its room-type relationship and the nullable province/ward codes added for post-merger location filtering.
 
 | Field | Type/Source | Rules |
 |---|---|---|
@@ -62,7 +64,7 @@ Existing persistent entity in `listings`; public search adds a room-type relatio
 | `price` | Existing positive integer | VND per month; maximum-price comparison is inclusive. |
 | `area_m2` | Existing positive real | Square meters; selected lower and upper bounds are inclusive. |
 | `address` | Existing `varchar(255)` | Public address and keyword-search field. |
-| `district` | Existing `varchar(100)` | Public location and keyword-search field; exact district filter. |
+| `district` | Existing `varchar(100)` | Public location and keyword-search field. An exact district filter remains available in the API, but the current UI has no separate district selector. |
 | `province_code` | Nullable `varchar(2)` | Verified post-merger province/city code. Null on unclassified legacy listings. |
 | `ward_code` | Nullable `varchar(5)` | Verified ward/commune/special-zone code; requires `province_code`. |
 | `status` | Existing status | Only `approved` rows can be returned publicly. |
@@ -70,6 +72,8 @@ Existing persistent entity in `listings`; public search adds a room-type relatio
 | `room_type_id` | New nullable integer FK | References `room_types.id` for classified listings. Existing rows whose type cannot be determined reliably remain null; never assign an inferred category. |
 
 The API must not expose `owner_id`, `reviewed_by`, rejection metadata, user records, or other private fields.
+
+The current listing create/update API does not accept or populate `province_code` or `ward_code`. Search fixtures that exercise these filters must set verified codes explicitly; ordinary listings without verified codes remain unclassified.
 
 ### RoomType
 
@@ -97,7 +101,9 @@ Reuse `listing_images`. Select the cover image when available, otherwise the fir
 | Field | Meaning and validation |
 |---|---|
 | `keyword` | Optional trimmed text searched against title, address, and district. Repeated whitespace is normalized; empty-after-trim is treated as absent. |
-| `district` | Optional exact supported district value. |
+| `provinceCode` | Optional 2-digit code from the shared administrative-unit catalog. |
+| `wardCode` | Optional 5-digit code belonging to `provinceCode`; invalid without its parent province. |
+| `district` | Optional exact supported district value accepted by the API for compatibility; the current UI has no separate district selector and searches district text through `keyword`. |
 | `roomType` | Optional active room-type code from `RoomType`. |
 | `maxPrice` | Optional positive integer in VND/month; inclusive upper bound. |
 | `minAreaM2` | Optional positive numeric lower bound, inclusive. |
@@ -111,7 +117,7 @@ Unsupported filter values and malformed values are validation errors; they must 
 
 A public projection containing only fields required by the result card and approved-listing detail view:
 
-- Identifier, title, description (detail only), price, area, address, district, room-type code and label, cover image, and amenity identifiers/names.
+- Identifier, title, description (detail only), price, area, address, district, nullable province/ward codes, room-type code and label, cover image, and amenity identifiers/names.
 - No owner/account details, moderation notes, or private fields.
 - Results are approved-only and ordered by `created_at DESC, id DESC`.
 
@@ -120,6 +126,7 @@ The paginated response contains the result array plus `page`, fixed `limit` (`12
 ## Migration and Integrity Notes
 
 1. Add the room-type catalog and listing association in a new versioned migration; do not edit the applied initial migration.
-2. Seed exactly the four confirmed catalog values. Keep legacy listing references nullable when no reliable mapping exists; do not assign an inaccurate category or make the column non-null until listing creation guarantees a valid type for new rows.
-3. Preserve current listing moderation semantics. Room availability is not modeled by the existing schema and is not introduced by this feature.
-4. Reuse existing price/area and amenity integrity rules. Validate public query input at the API boundary and still bind all values in SQL.
+2. Add nullable province/ward columns in a separate versioned migration, require a province when a ward is set, and index the code pair. Do not infer or backfill unverified legacy locations.
+3. Seed exactly the four confirmed room-type catalog values. Keep legacy listing references nullable when no reliable mapping exists; do not assign an inaccurate category or make the column non-null until listing creation guarantees a valid type for new rows.
+4. Preserve current listing moderation semantics. Room availability is not modeled by the existing schema and is not introduced by this feature.
+5. Reuse existing price/area and amenity integrity rules. Validate public query input at the API boundary and still bind all values in SQL.
